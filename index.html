@@ -1,716 +1,513 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VIPCell | Seu Mundo Tecnológico</title>
-    
-    <!-- Otimização de Carregamento -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    
-    <!-- Tailwind CSS (Versão Minificada) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
-    
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Analytics — Restauração de Fotos</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #0d0f14;
+    --card:     #161920;
+    --border:   #252830;
+    --accent:   #f0a500;
+    --accent2:  #25D366;
+    --text:     #e8eaf0;
+    --muted:    #6b7280;
+    --danger:   #ef4444;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Sora', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-        :root {
-            --neon-green: #39ff14; 
-            --dark-bg: #050505;
-            --card-bg: #121212;
-        }
+  /* ── CONFIGURAÇÃO ── */
+  #config-screen {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .config-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px 32px;
+    width: 100%; max-width: 460px;
+  }
+  .config-box h2 { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+  .config-box p  { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .8px; }
+  .field input {
+    width: 100%; background: var(--bg); border: 1px solid var(--border);
+    color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 13px;
+    padding: 12px 14px; border-radius: 8px; outline: none;
+    transition: border-color .2s;
+  }
+  .field input:focus { border-color: var(--accent); }
+  .btn-primary {
+    width: 100%; background: var(--accent); color: #000; font-family: 'Sora', sans-serif;
+    font-weight: 800; font-size: 15px; padding: 14px; border: none; border-radius: 10px;
+    cursor: pointer; margin-top: 8px; transition: opacity .2s;
+  }
+  .btn-primary:hover { opacity: .88; }
+  .save-note { font-size: 12px; color: var(--muted); text-align: center; margin-top: 10px; }
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--dark-bg);
-            color: white;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-        }
+  /* ── PAINEL ── */
+  #dashboard { display: none; padding: 20px; max-width: 1100px; margin: 0 auto; }
 
-        .neon-text {
-            color: var(--neon-green);
-            text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
-        }
+  .top-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 28px; flex-wrap: wrap; gap: 12px;
+  }
+  .top-bar h1 { font-size: 20px; font-weight: 800; }
+  .top-bar h1 span { color: var(--accent); }
+  .btn-refresh {
+    background: var(--card); border: 1px solid var(--border); color: var(--text);
+    font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600;
+    padding: 9px 16px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px;
+  }
+  .btn-refresh:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-settings { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 20px; }
 
-        /* Otimização de Blur (Glassmorphism mais leve) */
-        .glass {
-            background: rgba(18, 18, 18, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            /* Backdrop-filter pode pesar em celulares antigos, usamos um valor conservador */
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-        }
+  /* Cards de resumo */
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 24px; }
+  .kpi-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px 16px;
+  }
+  .kpi-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 8px; }
+  .kpi-value { font-size: 28px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+  .kpi-value.green  { color: var(--accent2); }
+  .kpi-value.yellow { color: var(--accent); }
+  .kpi-value.red    { color: var(--danger); }
+  .kpi-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
 
-        /* Animação de Flutuação Otimizada com will-change */
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
+  /* Gráficos */
+  .chart-grid { display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 24px; }
+  @media (min-width: 700px) { .chart-grid { grid-template-columns: 1fr 1fr; } }
 
-        .floating {
-            animation: float 4s ease-in-out infinite;
-            will-change: transform; /* Dica para o navegador otimizar */
-        }
+  .chart-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px;
+  }
+  .chart-card.full { grid-column: 1 / -1; }
+  .chart-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .chart-sub   { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
 
-        /* Transições de Tela */
-        #intro-screen, #product-screen {
-            transition: opacity 0.4s ease-in-out;
-        }
-        
-        .hidden-screen {
-            display: none !important;
-            opacity: 0;
-        }
+  /* Heatmap */
+  #heatmap-container {
+    position: relative; width: 100%; background: #1a1d24;
+    border-radius: 8px; overflow: hidden; min-height: 280px;
+  }
+  #heatmap-bg { width: 100%; display: block; opacity: .12; }
+  #heatmap-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
-        /* Controle de Abas */
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: grid;
-            animation: fadeIn 0.4s ease-out forwards;
-        }
+  /* Tabela CTA */
+  .cta-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .cta-table th { text-align: left; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; padding: 0 0 10px; border-bottom: 1px solid var(--border); }
+  .cta-table td { padding: 10px 0; border-bottom: 1px solid var(--border); color: var(--text); }
+  .cta-table tr:last-child td { border: none; }
+  .badge { background: var(--accent2); color: #000; font-weight: 700; font-size: 11px; padding: 2px 8px; border-radius: 20px; }
+  .badge.y { background: var(--accent); }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+  /* Loading */
+  .loading { text-align: center; color: var(--muted); padding: 40px; font-size: 14px; }
+  .spinner { width: 28px; height: 28px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 12px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
-        .category-btn {
-            transition: all 0.2s ease;
-        }
-
-        .category-btn.active {
-            background-color: var(--neon-green);
-            color: black;
-            box-shadow: 0 0 15px rgba(57, 255, 20, 0.4);
-            border-color: var(--neon-green);
-            transform: scale(1.02);
-        }
-
-        /* Cards de Produtos */
-        .product-card {
-            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-            position: relative;
-            z-index: 1;
-            /* Renderização acelerada */
-            transform: translateZ(0);
-        }
-
-        .product-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--neon-green);
-            box-shadow: 0 5px 25px -10px rgba(57, 255, 20, 0.15);
-            z-index: 10;
-        }
-
-        .product-img-container {
-            width: 100%;
-            height: 250px;
-            overflow: hidden;
-            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .product-img-container img {
-            max-width: 85%;
-            max-height: 85%;
-            object-fit: contain;
-            transition: transform 0.4s ease;
-            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5));
-        }
-
-        .product-card:hover .product-img-container img {
-            transform: scale(1.05);
-        }
-
-        /* Botão Hero Otimizado */
-        .hero-btn {
-            background: radial-gradient(circle at center, rgba(57, 255, 20, 0.1) 0%, rgba(10,10,10,1) 100%);
-            border: 2px solid var(--neon-green);
-            border-radius: 9999px;
-            box-shadow: 0 0 20px rgba(57, 255, 20, 0.15);
-            animation: float 4s ease-in-out infinite;
-            will-change: transform;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            padding: 20px 40px;
-            width: 100%;
-        }
-        
-        .hero-btn:hover {
-            transform: translateY(-3px) scale(1.01);
-            box-shadow: 0 0 40px rgba(57, 255, 20, 0.4);
-            background: rgba(57, 255, 20, 0.05);
-        }
-
-        .hero-btn i {
-            font-size: 2.5rem;
-            color: var(--neon-green);
-        }
-
-        /* Botões Secundários */
-        .secondary-btn {
-            border-radius: 9999px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            /* Remover blur pesado nos botões secundários para performance */
-            backdrop-filter: none;
-            background-color: #1a1a1a; 
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            padding: 16px 24px;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        .secondary-btn:hover {
-            border-color: var(--neon-green);
-            transform: translateY(-2px);
-            background-color: #222;
-        }
-
-        .secondary-btn i {
-            font-size: 1.4rem;
-            color: #ccc;
-        }
-
-        .secondary-btn:hover i {
-            color: var(--neon-green);
-        }
-
-        .secondary-btn span {
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
-            color: #eee;
-        }
-
-    </style>
+  /* Error */
+  .error-box { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3); border-radius: 10px; padding: 14px 16px; font-size: 13px; color: var(--danger); margin-bottom: 20px; }
+</style>
 </head>
 <body>
 
-    <!-- Header Fixo -->
-    <header class="p-3 sticky top-0 z-50 glass border-b border-white/5 shadow-md">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-3 cursor-pointer" onclick="voltarInicio()">
-                <div class="w-10 h-10 bg-black rounded-full flex items-center justify-center overflow-hidden border border-[#39ff14]">
-                    <img src="610716299_17879418489449528_2168736092209174850_n.jpg" alt="Logo" class="w-full h-full object-cover" loading="eager">
-                </div>
-                <h1 class="text-xl font-bold tracking-tighter">VIP<span class="neon-text">CELL</span></h1>
-            </div>
-            
-            <button id="btn-voltar" onclick="voltarInicio()" class="hidden text-xs border border-white/20 px-4 py-2 rounded-full hover:bg-white/10 transition uppercase font-bold tracking-wider">
-                <i class="fas fa-arrow-left mr-1"></i> Voltar
-            </button>
-        </div>
-    </header>
+<!-- ── TELA DE CONFIGURAÇÃO ── -->
+<div id="config-screen">
+  <div class="config-box">
+    <h2>⚡ Painel Analytics</h2>
+    <p>Insira suas credenciais do Supabase para acessar os dados.</p>
 
-    <!-- TELA INICIAL -->
-    <main id="intro-screen" class="container mx-auto px-4 py-8 min-h-[80vh] flex flex-col justify-center items-center">
-        
-        <!-- Info da Empresa -->
-        <div class="text-center space-y-4 mb-10 max-w-2xl">
-            <div class="inline-block relative">
-                <div class="absolute inset-0 bg-[#39ff14] opacity-20 blur-2xl rounded-full"></div>
-                <i class="fas fa-microchip text-6xl text-[#39ff14] relative z-10 floating mb-4"></i>
-            </div>
-            <h2 class="text-3xl md:text-5xl font-bold leading-tight">
-                Seu Mundo <br><span class="neon-text">Tecnológico</span>
-            </h2>
-            
-            <div class="flex flex-wrap justify-center gap-2 text-[10px] md:text-xs text-gray-400 mt-4">
-                <span class="bg-[#1a1a1a] px-3 py-1.5 rounded-full border border-white/10"><i class="fas fa-check text-[#39ff14] mr-1"></i> 14 Anos de Tradição</span>
-                <span class="bg-[#1a1a1a] px-3 py-1.5 rounded-full border border-white/10"><i class="fas fa-clock text-[#39ff14] mr-1"></i> Reparo em 1h</span>
-                <span class="bg-[#1a1a1a] px-3 py-1.5 rounded-full border border-white/10"><i class="fas fa-shield-alt text-[#39ff14] mr-1"></i> Garantia</span>
-            </div>
-        </div>
+    <div class="field">
+      <label>URL do Projeto Supabase</label>
+      <input id="inp-url" type="text" placeholder="https://xxxxxxxx.supabase.co">
+    </div>
+    <div class="field">
+      <label>Service Role Key (privada)</label>
+      <input id="inp-key" type="password" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6...">
+    </div>
 
-        <!-- BOTOES OTIMIZADOS -->
-        <div class="flex flex-col gap-4 w-full max-w-md mx-auto items-center">
-            
-            <!-- Botão Principal -->
-            <button onclick="mostrarProdutos()" class="hero-btn group">
-                <i class="fas fa-mobile-screen-button transition-transform group-hover:rotate-12"></i>
-                <div class="flex flex-col items-start">
-                    <span class="text-xl font-bold uppercase tracking-widest text-white leading-none">Ver Produtos</span>
-                    <span class="text-[10px] text-[#39ff14] font-normal mt-1 tracking-wider group-hover:text-white transition-colors">IPHONES, ANDROIDS & ACESSÓRIOS</span>
-                </div>
-                <i class="fas fa-chevron-right text-white text-sm opacity-50 ml-auto group-hover:translate-x-1 transition-transform"></i>
-            </button>
+    <button class="btn-primary" onclick="initDashboard()">Acessar Painel →</button>
+    <p class="save-note">As credenciais ficam salvas só neste navegador.</p>
+  </div>
+</div>
 
-            <!-- Separador -->
-            <div class="h-4 w-full flex items-center justify-center">
-                <div class="h-px bg-white/10 w-full"></div>
-                <span class="px-3 text-xs text-gray-500 bg-[#0a0a0a] uppercase">Contato</span>
-                <div class="h-px bg-white/10 w-full"></div>
-            </div>
+<!-- ── PAINEL PRINCIPAL ── -->
+<div id="dashboard">
+  <div class="top-bar">
+    <h1>Painel <span>Analytics</span></h1>
+    <div style="display:flex;gap:10px;align-items:center">
+      <button class="btn-refresh" onclick="loadAll()">↻ Atualizar</button>
+      <button class="btn-settings" onclick="showConfig()" title="Configurações">⚙️</button>
+    </div>
+  </div>
 
-            <!-- Botões Secundários -->
-            <a href="https://wa.me/5579999999999" target="_blank" class="secondary-btn">
-                <i class="fab fa-whatsapp"></i>
-                <span>Atendimento Tobias Barreto</span>
-            </a>
+  <div id="error-area"></div>
 
-            <a href="https://wa.me/5579888888888" target="_blank" class="secondary-btn">
-                <i class="fab fa-whatsapp"></i>
-                <span>Atendimento Itabaianinha</span>
-            </a>
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Sessões totais</div>
+      <div class="kpi-value yellow" id="kpi-sessions">—</div>
+      <div class="kpi-sub">visitas únicas</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Tempo médio na página</div>
+      <div class="kpi-value green" id="kpi-time">—</div>
+      <div class="kpi-sub">segundos</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Assistiram o vídeo</div>
+      <div class="kpi-value yellow" id="kpi-video-pct">—</div>
+      <div class="kpi-sub">pelo menos 5s</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Tempo médio no vídeo</div>
+      <div class="kpi-value green" id="kpi-video-avg">—</div>
+      <div class="kpi-sub">segundos assistidos</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Cliques no WhatsApp</div>
+      <div class="kpi-value green" id="kpi-cta">—</div>
+      <div class="kpi-sub">total de toques</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Taxa de conversão</div>
+      <div class="kpi-value yellow" id="kpi-conv">—</div>
+      <div class="kpi-sub">clicou no CTA / sessões</div>
+    </div>
+  </div>
 
-            <a href="#localizacao-mapa" onclick="mostrarLocalNoIntro()" class="secondary-btn">
-                <i class="fas fa-map-marker-alt"></i>
-                <span>Ver Localização</span>
-            </a>
-        </div>
+  <div class="chart-grid">
 
-        <!-- Mapa -->
-        <div id="localizacao-mapa" class="hidden mt-8 w-full max-w-md bg-[#121212] p-6 rounded-3xl border border-white/10 text-center animate-fade-in">
-            <h4 class="text-[#39ff14] font-bold mb-2">Visite Nossa Loja</h4>
-            <p class="text-sm text-gray-400 mb-4">R. Getúlio Vargas, 584 - Tobias Barreto, SE</p>
-            <a href="https://maps.google.com" target="_blank" class="px-6 py-2 bg-[#39ff14] text-black rounded-full font-bold text-xs uppercase tracking-widest hover:bg-white transition">Abrir no GPS</a>
-        </div>
+    <!-- Curva de abandono do vídeo -->
+    <div class="chart-card full">
+      <div class="chart-title">📉 Curva de abandono do vídeo</div>
+      <div class="chart-sub">Quantas pessoas estavam assistindo em cada segundo</div>
+      <div id="video-loading" class="loading"><div class="spinner"></div>Carregando dados...</div>
+      <canvas id="videoChart" style="display:none"></canvas>
+    </div>
 
-    </main>
+    <!-- Distribuição de tempo na página -->
+    <div class="chart-card">
+      <div class="chart-title">⏱ Tempo na página</div>
+      <div class="chart-sub">Distribuição em faixas de tempo</div>
+      <div id="time-loading" class="loading"><div class="spinner"></div></div>
+      <canvas id="timeChart" style="display:none"></canvas>
+    </div>
 
+    <!-- Heatmap de cliques -->
+    <div class="chart-card">
+      <div class="chart-title">🖱 Mapa de toques</div>
+      <div class="chart-sub">Onde as pessoas tocam na tela (% da página)</div>
+      <div id="heat-loading" class="loading"><div class="spinner"></div></div>
+      <div id="heatmap-container" style="display:none">
+        <canvas id="heatmap-canvas"></canvas>
+      </div>
+    </div>
 
-    <!-- TELA DE PRODUTOS -->
-    <section id="product-screen" class="hidden-screen container mx-auto px-4 py-8 mb-20 relative z-20">
-        
-        <!-- Menu de Abas -->
-        <div class="flex flex-wrap justify-center gap-2 mb-8 sticky top-20 z-40 py-3 bg-[#0a0a0a]/95 backdrop-blur-md rounded-b-3xl border-b border-white/5 shadow-xl -mt-4 px-2">
-            <button onclick="openTab('novos', this)" class="category-btn active px-4 py-2 rounded-full border border-white/10 font-bold uppercase tracking-widest text-[10px] md:text-xs">Novos</button>
-            <button onclick="openTab('seminovos', this)" class="category-btn px-4 py-2 rounded-full border border-white/10 font-bold uppercase tracking-widest text-[10px] md:text-xs">Seminovos</button>
-            <button onclick="openTab('acessorios', this)" class="category-btn px-4 py-2 rounded-full border border-white/10 font-bold uppercase tracking-widest text-[10px] md:text-xs">Acessórios</button>
-            <button onclick="openTab('androids', this)" class="category-btn px-4 py-2 rounded-full border border-white/10 font-bold uppercase tracking-widest text-[10px] md:text-xs">Androids</button>
-            <button onclick="openTab('personalizados', this)" class="category-btn px-4 py-2 rounded-full border border-white/10 font-bold uppercase tracking-widest text-[10px] md:text-xs">Personal.</button>
-        </div>
+    <!-- Tabela de CTAs clicados -->
+    <div class="chart-card full">
+      <div class="chart-title">🎯 Botões mais clicados</div>
+      <div class="chart-sub">Elementos com mais interação</div>
+      <div id="cta-loading" class="loading"><div class="spinner"></div></div>
+      <div id="cta-table-wrap" style="display:none">
+        <table class="cta-table">
+          <thead><tr><th>Texto do elemento</th><th>Tag</th><th>Cliques</th></tr></thead>
+          <tbody id="cta-tbody"></tbody>
+        </table>
+      </div>
+    </div>
 
-        <!-- LISTA NOVOS -->
-        <div id="novos" class="tab-content active grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            
-            <!-- Item 1: iPhone 17 Pro Max -->
-            <div class="product-card glass rounded-3xl overflow-hidden border border-white/5 flex flex-col">
-                <div class="product-img-container">
-                    <!-- IMAGEM SVG LEVE (Substitui placeholder.com) -->
-                    <img src="data:image/svg+xml;charset=UTF-8,%3csvg xmlns='https://hcdsbawdwzmlujxnxymf.supabase.co/storage/v1/object/public/video%20lp1/WhatsApp%20Image%202026-02-05%20at%2008.18.01.jpeg' viewBox='0 0 400 400' width='400' height='400'%3e%3crect width='400' height='400' fill='transparent'/%3e%3ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='24' fill='%2339ff14'%3eiPhone 17 Pro Max%3c/text%3e%3c/svg%3e" alt="iPhone 17 Pro Max" loading="lazy">
-                    <span class="absolute top-3 right-3 bg-[#39ff14] text-black text-[10px] font-bold px-3 py-1 rounded-full shadow-lg z-20">LANÇAMENTO</span>
-                </div>
-                <div class="p-5 flex-1 flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-lg font-bold mb-1">iPhone 17 Pro Max</h3>
-                        <div class="flex justify-between text-xs text-gray-400 mb-4 border-b border-white/10 pb-2">
-                            <span>1TB</span>
-                            <span class="text-white">Titanium</span>
-                        </div>
-                    </div>
-                    <div class="bg-black/40 p-4 rounded-2xl border border-white/5 mb-4">
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="text-[10px] text-gray-400">À Vista</span>
-                            <span class="text-lg font-bold text-[#39ff14]">R$ 11.990</span>
-                        </div>
-                        <div class="flex justify-between items-center text-[10px]">
-                            <span class="text-gray-400">Cartão</span>
-                            <span>12x R$ 1.099</span>
-                        </div>
-                    </div>
-                    <button onclick="comprarZap('iPhone 17 Pro Max', '11.990')" class="w-full py-3 bg-white hover:bg-[#39ff14] text-black font-bold rounded-full transition text-sm flex items-center justify-center gap-2 shadow-lg">
-                        <i class="fab fa-whatsapp"></i> Tenho Interesse
-                    </button>
-                </div>
-            </div>
+  </div>
+</div>
 
-            <!-- Item: iPhone 16 Pro Max -->
-            <div class="product-card glass rounded-3xl overflow-hidden border border-white/5 flex flex-col">
-                <div class="product-img-container">
-                     <img src="data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400' width='400' height='400'%3e%3crect width='400' height='400' fill='transparent'/%3e%3ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='24' fill='%23555'%3eiPhone 16 Pro Max%3c/text%3e%3c/svg%3e" alt="iPhone 16 Pro Max" loading="lazy">
-                </div>
-                <div class="p-5 flex-1 flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-lg font-bold mb-1">iPhone 16 Pro Max</h3>
-                        <div class="flex justify-between text-xs text-gray-400 mb-4 border-b border-white/10 pb-2">
-                            <span>512GB</span>
-                            <span class="text-white">Natural</span>
-                        </div>
-                    </div>
-                    <div class="bg-black/40 p-4 rounded-2xl border border-white/5 mb-4">
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="text-[10px] text-gray-400">À Vista</span>
-                            <span class="text-lg font-bold text-[#39ff14]">R$ 8.990</span>
-                        </div>
-                         <div class="flex justify-between items-center text-[10px]">
-                            <span class="text-gray-400">Cartão</span>
-                            <span>12x R$ 835</span>
-                        </div>
-                    </div>
-                    <button onclick="comprarZap('iPhone 16 Pro Max', '8.990')" class="w-full py-3 bg-white hover:bg-[#39ff14] text-black font-bold rounded-full transition text-sm flex items-center justify-center gap-2 shadow-lg">
-                        <i class="fab fa-whatsapp"></i> Tenho Interesse
-                    </button>
-                </div>
-            </div>
+<script>
+var SUPA_URL = '', SUPA_KEY = '';
 
-             <!-- Item 3: iPhone 15 Pro Max -->
-             <div class="product-card glass rounded-3xl overflow-hidden border border-white/5 flex flex-col">
-                <div class="product-img-container">
-                    <img src="data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400' width='400' height='400'%3e%3crect width='400' height='400' fill='transparent'/%3e%3ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='24' fill='%23555'%3eiPhone 15 Pro Max%3c/text%3e%3c/svg%3e" alt="iPhone 15 Pro Max" loading="lazy">
-                </div>
-                <div class="p-5 flex-1 flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-lg font-bold mb-1">iPhone 15 Pro Max</h3>
-                        <div class="flex justify-between text-xs text-gray-400 mb-4 border-b border-white/10 pb-2">
-                            <span>256GB</span>
-                            <span class="text-white">Azul</span>
-                        </div>
-                    </div>
-                    <div class="bg-black/40 p-4 rounded-2xl border border-white/5 mb-4">
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="text-[10px] text-gray-400">À Vista</span>
-                            <span class="text-lg font-bold text-[#39ff14]">R$ 7.190</span>
-                        </div>
-                         <div class="flex justify-between items-center text-[10px]">
-                            <span class="text-gray-400">Cartão</span>
-                            <span>12x R$ 670</span>
-                        </div>
-                    </div>
-                    <button onclick="comprarZap('iPhone 15 Pro Max', '7.190')" class="w-full py-3 bg-white hover:bg-[#39ff14] text-black font-bold rounded-full transition text-sm flex items-center justify-center gap-2 shadow-lg">
-                        <i class="fab fa-whatsapp"></i> Tenho Interesse
-                    </button>
-                </div>
-            </div>
+// ── INIT ─────────────────────────────────────────────────
+function initDashboard() {
+  SUPA_URL = document.getElementById('inp-url').value.trim().replace(/\/$/, '');
+  SUPA_KEY = document.getElementById('inp-key').value.trim();
+  if (!SUPA_URL || !SUPA_KEY) { alert('Preencha URL e chave!'); return; }
 
-            <!-- Item 4: iPhone 14 Pro Max -->
-            <div class="product-card glass rounded-3xl overflow-hidden border border-white/5 flex flex-col">
-                <div class="product-img-container">
-                    <img src="data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400' width='400' height='400'%3e%3crect width='400' height='400' fill='transparent'/%3e%3ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='24' fill='%23555'%3eiPhone 14 Pro Max%3c/text%3e%3c/svg%3e" alt="iPhone 14 Pro Max" loading="lazy">
-                </div>
-                <div class="p-5 flex-1 flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-lg font-bold mb-1">iPhone 14 Pro Max</h3>
-                        <div class="flex justify-between text-xs text-gray-400 mb-4 border-b border-white/10 pb-2">
-                            <span>128GB</span>
-                            <span class="text-white">Roxo</span>
-                        </div>
-                    </div>
-                    <div class="bg-black/40 p-4 rounded-2xl border border-white/5 mb-4">
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="text-[10px] text-gray-400">À Vista</span>
-                            <span class="text-lg font-bold text-[#39ff14]">R$ 5.990</span>
-                        </div>
-                         <div class="flex justify-between items-center text-[10px]">
-                            <span class="text-gray-400">Cartão</span>
-                            <span>12x R$ 560</span>
-                        </div>
-                    </div>
-                    <button onclick="comprarZap('iPhone 14 Pro Max', '5.990')" class="w-full py-3 bg-white hover:bg-[#39ff14] text-black font-bold rounded-full transition text-sm flex items-center justify-center gap-2 shadow-lg">
-                        <i class="fab fa-whatsapp"></i> Tenho Interesse
-                    </button>
-                </div>
-            </div>
+  localStorage.setItem('supa_url', SUPA_URL);
+  localStorage.setItem('supa_key', SUPA_KEY);
 
-            <!-- Item 5: iPhone 13 Pro Max -->
-            <div class="product-card glass rounded-3xl overflow-hidden border border-white/5 flex flex-col">
-                <div class="product-img-container">
-                    <img src="data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400' width='400' height='400'%3e%3crect width='400' height='400' fill='transparent'/%3e%3ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='24' fill='%23555'%3eiPhone 13 Pro Max%3c/text%3e%3c/svg%3e" alt="iPhone 13 Pro Max" loading="lazy">
-                </div>
-                <div class="p-5 flex-1 flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-lg font-bold mb-1">iPhone 13 Pro Max</h3>
-                        <div class="flex justify-between text-xs text-gray-400 mb-4 border-b border-white/10 pb-2">
-                            <span>128GB</span>
-                            <span class="text-white">Verde</span>
-                        </div>
-                    </div>
-                    <div class="bg-black/40 p-4 rounded-2xl border border-white/5 mb-4">
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="text-[10px] text-gray-400">À Vista</span>
-                            <span class="text-lg font-bold text-[#39ff14]">R$ 4.890</span>
-                        </div>
-                         <div class="flex justify-between items-center text-[10px]">
-                            <span class="text-gray-400">Cartão</span>
-                            <span>12x R$ 455</span>
-                        </div>
-                    </div>
-                    <button onclick="comprarZap('iPhone 13 Pro Max', '4.890')" class="w-full py-3 bg-white hover:bg-[#39ff14] text-black font-bold rounded-full transition text-sm flex items-center justify-center gap-2 shadow-lg">
-                        <i class="fab fa-whatsapp"></i> Tenho Interesse
-                    </button>
-                </div>
-            </div>
-        </div>
+  document.getElementById('config-screen').style.display = 'none';
+  document.getElementById('dashboard').style.display     = 'block';
+  loadAll();
+}
 
-        <!-- LISTA SEMINOVOS -->
-        <div id="seminovos" class="tab-content grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-             <div class="product-card glass rounded-3xl overflow-hidden border border-white/5 flex flex-col">
-                <div class="product-img-container">
-                    <img src="data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400' width='400' height='400'%3e%3crect width='400' height='400' fill='transparent'/%3e%3ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='24' fill='%23555'%3eiPhone 15 Pro Semi%3c/text%3e%3c/svg%3e" alt="iPhone 15 Pro" loading="lazy">
-                    <span class="absolute top-3 left-3 bg-[#39ff14] text-black text-[10px] font-bold px-3 py-1 rounded-full shadow-lg z-20">BATERIA 100%</span>
-                </div>
-                <div class="p-5 flex-1 flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-lg font-bold mb-1">iPhone 15 Pro (Semi)</h3>
-                        <div class="flex justify-between text-xs text-gray-400 mb-4 border-b border-white/10 pb-2">
-                            <span>128GB</span>
-                            <span class="text-white">Impecável</span>
-                        </div>
-                    </div>
-                    <div class="bg-black/40 p-4 rounded-2xl border border-white/5 mb-4">
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="text-[10px] text-gray-400">À Vista</span>
-                            <span class="text-lg font-bold text-[#39ff14]">R$ 5.800</span>
-                        </div>
-                        <div class="flex justify-between items-center text-[10px]">
-                            <span class="text-gray-400">Bateria</span>
-                            <span class="text-[#39ff14]">Saúde 100%</span>
-                        </div>
-                    </div>
-                    <button onclick="comprarZap('iPhone 15 Pro Seminovo', '5.800')" class="w-full py-3 bg-white hover:bg-[#39ff14] text-black font-bold rounded-full transition text-sm flex items-center justify-center gap-2 shadow-lg">
-                        <i class="fab fa-whatsapp"></i> Consultar
-                    </button>
-                </div>
-            </div>
-            <!-- ... Outros itens Seminovos ... -->
-        </div>
+function showConfig() {
+  document.getElementById('dashboard').style.display     = 'none';
+  document.getElementById('config-screen').style.display = 'flex';
+}
 
-        <!-- LISTA ACESSÓRIOS -->
-        <div id="acessorios" class="tab-content grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-             <div class="glass p-5 rounded-3xl text-center space-y-3 flex flex-col items-center hover:bg-white/5 transition border border-white/5">
-                <div class="w-full h-32 flex items-center justify-center mb-2 bg-black/30 rounded-full w-32 h-32 mx-auto relative group">
-                    <div class="absolute inset-0 bg-[#39ff14] opacity-0 group-hover:opacity-20 rounded-full blur-xl transition duration-500"></div>
-                    <i class="fas fa-headset text-6xl text-[#39ff14] z-10 relative"></i>
-                </div>
-                <h3 class="font-bold text-lg">AirPods Pro Gen 2</h3>
-                <div class="py-2 w-full">
-                    <p class="text-xl font-bold text-[#39ff14]">R$ 1.890</p>
-                    <p class="text-[10px] text-gray-400">ou 10x de R$ 210</p>
-                </div>
-                <button onclick="comprarZap('AirPods Pro', '1.890')" class="w-full py-2 border border-white/20 rounded-full hover:bg-[#39ff14] hover:text-black hover:border-[#39ff14] transition text-sm font-bold uppercase tracking-wider">Comprar</button>
-            </div>
-            <div class="glass p-5 rounded-3xl text-center space-y-3 flex flex-col items-center hover:bg-white/5 transition border border-white/5">
-                <div class="w-full h-32 flex items-center justify-center mb-2 bg-black/30 rounded-full w-32 h-32 mx-auto relative group">
-                    <div class="absolute inset-0 bg-[#39ff14] opacity-0 group-hover:opacity-20 rounded-full blur-xl transition duration-500"></div>
-                    <i class="fas fa-bolt text-6xl text-[#39ff14] z-10 relative"></i>
-                </div>
-                <h3 class="font-bold text-lg">Fonte 20W USB-C</h3>
-                <div class="py-2 w-full">
-                    <p class="text-xl font-bold text-[#39ff14]">R$ 199</p>
-                    <p class="text-[10px] text-gray-400">Original Apple</p>
-                </div>
-                <button onclick="comprarZap('Fonte 20W', '199')" class="w-full py-2 border border-white/20 rounded-full hover:bg-[#39ff14] hover:text-black hover:border-[#39ff14] transition text-sm font-bold uppercase tracking-wider">Comprar</button>
-            </div>
-             <div class="glass p-5 rounded-3xl text-center space-y-3 flex flex-col items-center hover:bg-white/5 transition border border-white/5">
-                <div class="w-full h-32 flex items-center justify-center mb-2 bg-black/30 rounded-full w-32 h-32 mx-auto relative group">
-                    <div class="absolute inset-0 bg-[#39ff14] opacity-0 group-hover:opacity-20 rounded-full blur-xl transition duration-500"></div>
-                    <i class="fas fa-shield-alt text-6xl text-[#39ff14] z-10 relative"></i>
-                </div>
-                <h3 class="font-bold text-lg">Película 3D Privativa</h3>
-                <div class="py-2 w-full">
-                    <p class="text-xl font-bold text-[#39ff14]">R$ 40</p>
-                    <p class="text-[10px] text-gray-400">Instalação Grátis</p>
-                </div>
-                <button onclick="comprarZap('Película 3D', '40')" class="w-full py-2 border border-white/20 rounded-full hover:bg-[#39ff14] hover:text-black hover:border-[#39ff14] transition text-sm font-bold uppercase tracking-wider">Comprar</button>
-            </div>
-        </div>
+// Auto-carregar se já tiver credenciais salvas
+window.addEventListener('DOMContentLoaded', function() {
+  var u = localStorage.getItem('supa_url');
+  var k = localStorage.getItem('supa_key');
+  if (u && k) {
+    document.getElementById('inp-url').value = u;
+    document.getElementById('inp-key').value = k;
+    SUPA_URL = u; SUPA_KEY = k;
+    document.getElementById('config-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display     = 'block';
+    loadAll();
+  }
+});
 
-        <!-- LISTA ANDROIDS -->
-        <div id="androids" class="tab-content grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="product-card glass rounded-3xl overflow-hidden border border-white/5">
-                <div class="product-img-container">
-                    <img src="data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400' width='400' height='400'%3e%3crect width='400' height='400' fill='transparent'/%3e%3ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='24' fill='%23555'%3eSamsung S23 Ultra%3c/text%3e%3c/svg%3e" alt="S23 Ultra" loading="lazy">
-                </div>
-                <div class="p-5 space-y-4">
-                    <div class="flex justify-between items-start">
-                        <h3 class="text-xl font-bold">Samsung S23 Ultra</h3>
-                        <i class="fab fa-android text-2xl text-[#39ff14]"></i>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2 py-2">
-                        <div class="bg-white/5 p-2 rounded-xl text-center border border-white/5">
-                            <p class="text-[10px] text-gray-400">RAM</p>
-                            <p class="font-bold text-xs">12GB</p>
-                        </div>
-                        <div class="bg-white/5 p-2 rounded-xl text-center border border-white/5">
-                            <p class="text-[10px] text-gray-400">Armazenamento</p>
-                            <p class="font-bold text-xs">512GB</p>
-                        </div>
-                    </div>
-                    <div class="bg-black/50 p-4 rounded-2xl border border-white/5">
-                        <p class="text-2xl font-bold neon-text text-center">R$ 4.990</p>
-                    </div>
-                    <button onclick="comprarZap('Samsung S23 Ultra', '4.990')" class="w-full py-3 bg-white text-black font-bold rounded-full hover:bg-[#39ff14] transition shadow-lg">Ver Mais</button>
-                </div>
-            </div>
-             <div class="product-card glass rounded-3xl overflow-hidden border border-white/5">
-                <div class="product-img-container">
-                    <img src="data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400' width='400' height='400'%3e%3crect width='400' height='400' fill='transparent'/%3e%3ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='24' fill='%23555'%3eXiaomi Note 13%3c/text%3e%3c/svg%3e" alt="Xiaomi" loading="lazy">
-                </div>
-                <div class="p-5 space-y-4">
-                    <div class="flex justify-between items-start">
-                        <h3 class="text-xl font-bold">Xiaomi Note 13</h3>
-                        <i class="fab fa-android text-2xl text-[#39ff14]"></i>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2 py-2">
-                        <div class="bg-white/5 p-2 rounded-xl text-center border border-white/5">
-                            <p class="text-[10px] text-gray-400">RAM</p>
-                            <p class="font-bold text-xs">8GB</p>
-                        </div>
-                        <div class="bg-white/5 p-2 rounded-xl text-center border border-white/5">
-                            <p class="text-[10px] text-gray-400">Armazenamento</p>
-                            <p class="font-bold text-xs">256GB</p>
-                        </div>
-                    </div>
-                    <div class="bg-black/50 p-4 rounded-2xl border border-white/5">
-                        <p class="text-2xl font-bold neon-text text-center">R$ 1.390</p>
-                    </div>
-                    <button onclick="comprarZap('Xiaomi Note 13', '1.390')" class="w-full py-3 bg-white text-black font-bold rounded-full hover:bg-[#39ff14] transition shadow-lg">Ver Mais</button>
-                </div>
-            </div>
-        </div>
+// ── FETCH HELPER ─────────────────────────────────────────
+function api(path) {
+  return fetch(SUPA_URL + '/rest/v1/' + path, {
+    headers: {
+      'apikey': SUPA_KEY,
+      'Authorization': 'Bearer ' + SUPA_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': 'count=exact'
+    }
+  }).then(function(r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  });
+}
 
-        <!-- LISTA PERSONALIZADOS -->
-        <div id="personalizados" class="tab-content grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="glass p-8 rounded-3xl border border-[#39ff14]/30 flex flex-col justify-center text-center hover:bg-white/5 transition group">
-                <div class="mb-6 transform group-hover:scale-110 transition duration-300">
-                    <i class="fas fa-mug-hot text-6xl text-[#39ff14] drop-shadow-[0_0_15px_rgba(57,255,20,0.5)]"></i>
-                </div>
-                <h3 class="text-2xl font-bold mb-2">Canecas Laser</h3>
-                <p class="text-gray-400 text-sm mb-6">Grave sua logo ou nome com precisão milimétrica.</p>
-                <div class="bg-white/5 p-4 rounded-xl mb-6 border border-white/5">
-                    <span class="font-bold text-xl neon-text">Consulte Cores</span>
-                </div>
-                <button onclick="comprarZap('Personalizado Caneca', 'A combinar')" class="w-full py-4 bg-[#39ff14] text-black font-bold rounded-full shadow-lg hover:shadow-[0_0_20px_rgba(57,255,20,0.6)] transition">Solicitar Orçamento</button>
-            </div>
-            <div class="glass p-8 rounded-3xl border border-[#39ff14]/30 flex flex-col justify-center text-center hover:bg-white/5 transition group">
-                <div class="mb-6 transform group-hover:scale-110 transition duration-300">
-                    <i class="fas fa-cube text-6xl text-[#39ff14] drop-shadow-[0_0_15px_rgba(57,255,20,0.5)]"></i>
-                </div>
-                <h3 class="text-2xl font-bold mb-2">Impressão 3D</h3>
-                <p class="text-gray-400 text-sm mb-6">Peças de reposição, action figures e protótipos.</p>
-                 <div class="bg-white/5 p-4 rounded-xl mb-6 border border-white/5">
-                    <span class="font-bold text-xl neon-text">Sob Medida</span>
-                </div>
-                <button onclick="comprarZap('Projeto 3D', 'A combinar')" class="w-full py-4 bg-[#39ff14] text-black font-bold rounded-full shadow-lg hover:shadow-[0_0_20px_rgba(57,255,20,0.6)] transition">Solicitar Orçamento</button>
-            </div>
-        </div>
+function showError(msg) {
+  document.getElementById('error-area').innerHTML =
+    '<div class="error-box">⚠️ ' + msg + '</div>';
+}
 
-    </section>
+// ── CARREGAR TUDO ─────────────────────────────────────────
+var videoChartInst = null, timeChartInst = null;
 
-    <!-- Rodapé -->
-    <footer id="localizacao" class="bg-black py-16 mt-12 border-t border-white/5 relative z-20">
-        <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:text-left">
-            <div class="space-y-4">
-                <h4 class="text-xl font-bold neon-text mb-4">Onde Estamos</h4>
-                <p class="text-gray-400 text-sm leading-relaxed">
-                    R. Getúlio Vargas, 584<br>
-                    Centro - Tobias Barreto, SE<br>
-                    CEP: 49300-000
-                </p>
-                <a href="https://maps.google.com" target="_blank" class="inline-block mt-4 px-6 py-2 border border-[#39ff14] text-[#39ff14] rounded-full hover:bg-[#39ff14] hover:text-black transition text-xs font-bold tracking-widest uppercase">Abrir no Mapa</a>
-            </div>
-            <div class="space-y-4">
-                <h4 class="text-xl font-bold neon-text mb-4">Horários</h4>
-                <ul class="text-gray-400 text-sm space-y-3">
-                    <li class="flex justify-between border-b border-white/5 pb-2"><span>Segunda - Sexta</span> <span class="text-white">08:00 – 18:00</span></li>
-                    <li class="flex justify-between border-b border-white/5 pb-2"><span>Sábado</span> <span class="text-white">08:00 – 13:00</span></li>
-                    <li class="flex justify-between text-red-500 font-bold"><span>Domingo</span> <span>Fechado</span></li>
-                </ul>
-            </div>
-            <div class="space-y-4 flex flex-col items-center md:items-start">
-                <h4 class="text-xl font-bold neon-text mb-4">Social</h4>
-                <div class="flex gap-4">
-                    <a href="#" class="w-12 h-12 glass rounded-full flex items-center justify-center hover:bg-[#39ff14] hover:text-black transition text-xl shadow-lg hover:scale-110">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a href="#" class="w-12 h-12 glass rounded-full flex items-center justify-center hover:bg-[#39ff14] hover:text-black transition text-xl shadow-lg hover:scale-110">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="text-center mt-12 pt-8 border-t border-white/5 text-[10px] text-gray-600 tracking-widest uppercase">
-            VIPCell © 2024 - Todos os direitos reservados
-        </div>
-    </footer>
+function loadAll() {
+  document.getElementById('error-area').innerHTML = '';
+  loadKpis();
+  loadVideoChart();
+  loadTimeChart();
+  loadHeatmap();
+  loadCtaTable();
+}
 
-    <!-- Botão Zap Fixo -->
-    <a href="https://wa.me/5579999999999" class="fixed bottom-6 right-6 w-16 h-16 bg-[#25D366] rounded-full flex items-center justify-center shadow-[0_0_25px_rgba(37,211,102,0.6)] z-50 hover:scale-110 transition animate-bounce">
-        <i class="fab fa-whatsapp text-4xl text-white"></i>
-    </a>
+// ── KPIs ─────────────────────────────────────────────────
+function loadKpis() {
+  // Sessões totais e tempo médio
+  api('sessions?select=time_on_page&time_on_page=gt.0').then(function(rows) {
+    document.getElementById('kpi-sessions').textContent = rows.length;
+    var avg = rows.length ? Math.round(rows.reduce(function(a, r) { return a + (r.time_on_page || 0); }, 0) / rows.length) : 0;
+    document.getElementById('kpi-time').textContent = avg + 's';
+  }).catch(function(e) { showError('Sessões: ' + e.message); });
 
-    <script>
-        // Funções de Transição de Tela
-        function mostrarProdutos() {
-            document.getElementById('intro-screen').classList.add('hidden-screen');
-            document.getElementById('product-screen').classList.remove('hidden-screen');
-            // Mostra o botão voltar no header
-            document.getElementById('btn-voltar').classList.remove('hidden');
-            // Garante que a primeira aba carregue
-            openTab('novos', document.querySelector("button[onclick*='novos']"));
-            window.scrollTo(0,0);
+  // Sessões totais (incluindo recentes)
+  api('sessions?select=session_id').then(function(rows) {
+    document.getElementById('kpi-sessions').textContent = rows.length;
+
+    // Video: quem assistiu pelo menos 5s
+    api('video_events?select=session_id&second=gte.5').then(function(ve) {
+      var uniq = new Set(ve.map(function(r) { return r.session_id; })).size;
+      var pct  = rows.length ? Math.round(uniq / rows.length * 100) : 0;
+      document.getElementById('kpi-video-pct').textContent = pct + '%';
+    });
+
+    // Cliques no WhatsApp
+    api("click_events?select=session_id,element_text&element_tag=eq.A").then(function(ce) {
+      var wha = ce.filter(function(r) { return (r.element_text || '').toUpperCase().includes('WHATSAPP') || (r.element_text || '').includes('RESTAURAR') || (r.element_text || '').includes('FOTO'); });
+      document.getElementById('kpi-cta').textContent = wha.length;
+      var conv = rows.length ? (Math.round(new Set(wha.map(function(r){return r.session_id;})).size / rows.length * 100)) + '%' : '—';
+      document.getElementById('kpi-conv').textContent = conv;
+    });
+  }).catch(function(e) { showError('KPIs: ' + e.message); });
+
+  // Tempo médio no vídeo
+  api('video_events?select=session_id,second&event_type=eq.progress').then(function(ve) {
+    var bySess = {};
+    ve.forEach(function(r) { if (!bySess[r.session_id] || r.second > bySess[r.session_id]) bySess[r.session_id] = r.second; });
+    var vals = Object.values(bySess);
+    var avg = vals.length ? Math.round(vals.reduce(function(a, v) { return a + v; }, 0) / vals.length) : 0;
+    document.getElementById('kpi-video-avg').textContent = avg + 's';
+  });
+}
+
+// ── GRÁFICO DE VÍDEO ─────────────────────────────────────
+function loadVideoChart() {
+  document.getElementById('video-loading').style.display = 'block';
+  document.getElementById('videoChart').style.display    = 'none';
+
+  api('video_events?select=session_id,second&event_type=eq.progress&order=second.asc&limit=50000')
+    .then(function(rows) {
+      // Para cada segundo S: quantas sessões assistiram ATÉ S
+      var maxBySess = {};
+      rows.forEach(function(r) {
+        if (maxBySess[r.session_id] === undefined || r.second > maxBySess[r.session_id])
+          maxBySess[r.session_id] = r.second;
+      });
+      var totalSess = Object.keys(maxBySess).length;
+      if (!totalSess) { document.getElementById('video-loading').innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px">Sem dados de vídeo ainda.</p>'; return; }
+
+      var maxSec = Math.max.apply(null, Object.values(maxBySess));
+      var labels = [], data = [];
+      for (var s = 0; s <= maxSec; s += Math.max(1, Math.floor(maxSec / 60))) {
+        var cnt = Object.values(maxBySess).filter(function(m) { return m >= s; }).length;
+        labels.push(s + 's');
+        data.push(Math.round(cnt / totalSess * 100));
+      }
+
+      document.getElementById('video-loading').style.display = 'none';
+      var canvas = document.getElementById('videoChart');
+      canvas.style.display = 'block';
+      if (videoChartInst) videoChartInst.destroy();
+      videoChartInst = new Chart(canvas, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: '% assistindo',
+            data: data,
+            borderColor: '#f0a500',
+            backgroundColor: 'rgba(240,165,0,0.08)',
+            borderWidth: 2,
+            pointRadius: 0,
+            fill: true,
+            tension: 0.35
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return c.parsed.y + '% dos espectadores'; } } } },
+          scales: {
+            x: { ticks: { color: '#6b7280', maxTicksLimit: 12 }, grid: { color: '#252830' } },
+            y: { ticks: { color: '#6b7280', callback: function(v) { return v + '%'; } }, grid: { color: '#252830' }, min: 0, max: 100 }
+          }
         }
+      });
+    }).catch(function(e) { document.getElementById('video-loading').innerHTML = '<p style="color:var(--danger)">Erro: ' + e.message + '</p>'; });
+}
 
-        function voltarInicio() {
-            document.getElementById('product-screen').classList.add('hidden-screen');
-            document.getElementById('intro-screen').classList.remove('hidden-screen');
-            // Esconde o botão voltar
-            document.getElementById('btn-voltar').classList.add('hidden');
+// ── GRÁFICO DE TEMPO NA PÁGINA ────────────────────────────
+function loadTimeChart() {
+  document.getElementById('time-loading').style.display = 'block';
+  document.getElementById('timeChart').style.display    = 'none';
+
+  api('sessions?select=time_on_page&time_on_page=gt.0').then(function(rows) {
+    var buckets = { '0-30s': 0, '30-60s': 0, '1-2min': 0, '2-5min': 0, '5min+': 0 };
+    rows.forEach(function(r) {
+      var t = r.time_on_page || 0;
+      if      (t < 30)   buckets['0-30s']++;
+      else if (t < 60)   buckets['30-60s']++;
+      else if (t < 120)  buckets['1-2min']++;
+      else if (t < 300)  buckets['2-5min']++;
+      else               buckets['5min+']++;
+    });
+
+    document.getElementById('time-loading').style.display = 'none';
+    var canvas = document.getElementById('timeChart');
+    canvas.style.display = 'block';
+    if (timeChartInst) timeChartInst.destroy();
+    timeChartInst = new Chart(canvas, {
+      type: 'bar',
+      data: {
+        labels: Object.keys(buckets),
+        datasets: [{
+          data: Object.values(buckets),
+          backgroundColor: ['#ef4444','#f97316','#f0a500','#84cc16','#25D366'],
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#6b7280' }, grid: { display: false } },
+          y: { ticks: { color: '#6b7280' }, grid: { color: '#252830' } }
         }
+      }
+    });
+  }).catch(function(e) { document.getElementById('time-loading').innerHTML = '<p style="color:var(--danger)">Erro: ' + e.message + '</p>'; });
+}
 
-        function mostrarLocalNoIntro() {
-            const mapa = document.getElementById('localizacao-mapa');
-            mapa.classList.remove('hidden');
-            // Pequena animação
-            mapa.scrollIntoView({ behavior: 'smooth' });
-        }
+// ── HEATMAP ───────────────────────────────────────────────
+function loadHeatmap() {
+  document.getElementById('heat-loading').style.display     = 'block';
+  document.getElementById('heatmap-container').style.display = 'none';
 
-        // Função de Abas
-        function openTab(tabName, btnElement) {
-            const contents = document.querySelectorAll('.tab-content');
-            contents.forEach(content => {
-                content.classList.remove('active');
-                content.style.display = 'none';
-            });
+  api('click_events?select=x_pct,y_pct&limit=5000').then(function(rows) {
+    document.getElementById('heat-loading').style.display      = 'none';
+    var container = document.getElementById('heatmap-container');
+    container.style.display = 'block';
 
-            const buttons = document.querySelectorAll('.category-btn');
-            buttons.forEach(btn => btn.classList.remove('active'));
+    var W = container.clientWidth  || 300;
+    var H = 280;
+    var canvas = document.getElementById('heatmap-canvas');
+    canvas.width  = W;
+    canvas.height = H;
+    var ctx = canvas.getContext('2d');
 
-            const selectedTab = document.getElementById(tabName);
-            if(selectedTab) {
-                selectedTab.style.display = '';
-                setTimeout(() => {
-                    selectedTab.classList.add('active');
-                }, 10);
-            }
+    // Fundo
+    ctx.fillStyle = '#1a1d24';
+    ctx.fillRect(0, 0, W, H);
 
-            if(btnElement) {
-                btnElement.classList.add('active');
-            }
-        }
+    // Pontos de calor
+    rows.forEach(function(r) {
+      var x = (r.x_pct / 100) * W;
+      var y = (r.y_pct / 100) * H;
+      var g = ctx.createRadialGradient(x, y, 0, x, y, 22);
+      g.addColorStop(0,   'rgba(240,165,0,0.35)');
+      g.addColorStop(1,   'rgba(240,165,0,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(x, y, 22, 0, Math.PI * 2);
+      ctx.fill();
+    });
 
-        function comprarZap(produto, preco) {
-            const telefone = "5579999999999"; 
-            const mensagem = `Olá VIPCell! Gostei do *${produto}* que vi no site por *R$ ${preco}*. Gostaria de saber mais detalhes e se está disponível.`;
-            const url = `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
-            window.open(url, '_blank');
-        }
+    // Destacar zona inferior (CTA)
+    ctx.strokeStyle = 'rgba(37,211,102,0.3)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.strokeRect(8, H * 0.7, W - 16, H * 0.28);
+    ctx.fillStyle = 'rgba(37,211,102,0.6)';
+    ctx.font = '11px Sora, sans-serif';
+    ctx.fillText('zona CTA', 14, H * 0.7 + 14);
 
-    </script>
+  }).catch(function(e) { document.getElementById('heat-loading').innerHTML = '<p style="color:var(--danger)">Erro: ' + e.message + '</p>'; });
+}
+
+// ── TABELA CTAs ───────────────────────────────────────────
+function loadCtaTable() {
+  document.getElementById('cta-loading').style.display      = 'block';
+  document.getElementById('cta-table-wrap').style.display   = 'none';
+
+  api('click_events?select=element_tag,element_text&limit=10000').then(function(rows) {
+    var counts = {};
+    rows.forEach(function(r) {
+      var key = (r.element_tag || '?') + '|' + (r.element_text || '(sem texto)').slice(0, 50);
+      counts[key] = (counts[key] || 0) + 1;
+    });
+
+    var sorted = Object.entries(counts).sort(function(a, b) { return b[1] - a[1]; }).slice(0, 10);
+
+    document.getElementById('cta-loading').style.display    = 'none';
+    document.getElementById('cta-table-wrap').style.display = 'block';
+    var tbody = document.getElementById('cta-tbody');
+    tbody.innerHTML = sorted.map(function(entry) {
+      var parts  = entry[0].split('|');
+      var tag    = parts[0];
+      var txt    = parts[1];
+      var isWha  = txt.toUpperCase().includes('WHATSAPP') || txt.toUpperCase().includes('RESTAURAR');
+      return '<tr><td>' + escHtml(txt) + '</td><td><code style="color:var(--muted);font-size:12px">' + escHtml(tag) + '</code></td><td><span class="badge' + (isWha ? '' : ' y') + '">' + entry[1] + '</span></td></tr>';
+    }).join('');
+  }).catch(function(e) { document.getElementById('cta-loading').innerHTML = '<p style="color:var(--danger)">Erro: ' + e.message + '</p>'; });
+}
+
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+</script>
 </body>
 </html>
