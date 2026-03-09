@@ -8,62 +8,49 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg:      #0d0f14;
-    --card:    #161920;
-    --border:  #252830;
-    --accent:  #f0a500;
-    --green:   #25D366;
-    --text:    #e8eaf0;
-    --muted:   #6b7280;
-    --danger:  #ef4444;
+    --bg:     #0d0f14;
+    --card:   #161920;
+    --border: #252830;
+    --accent: #f0a500;
+    --green:  #25D366;
+    --text:   #e8eaf0;
+    --muted:  #6b7280;
+    --danger: #ef4444;
+    --blue:   #3b82f6;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Sora', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
   /* ── LOGIN ── */
-  #login-screen {
-    min-height: 100vh;
-    display: flex; align-items: center; justify-content: center; padding: 20px;
-  }
-  .login-box {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 16px; padding: 36px 32px; width: 100%; max-width: 440px;
-  }
+  #login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .login-box { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 36px 32px; width: 100%; max-width: 440px; }
   .login-box h2 { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
-  .login-box p  { color: var(--muted); font-size: 14px; margin-bottom: 28px; line-height: 1.5; }
+  .login-box p  { color: var(--muted); font-size: 14px; margin-bottom: 28px; line-height: 1.6; }
   .field { margin-bottom: 16px; }
-  .field label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .8px; }
-  .field input {
-    width: 100%; background: var(--bg); border: 1px solid var(--border);
-    color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 12px;
-    padding: 11px 13px; border-radius: 8px; outline: none; transition: border-color .2s;
-  }
+  .field label { display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .8px; }
+  .field input { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 12px; padding: 11px 13px; border-radius: 8px; outline: none; transition: border-color .2s; }
   .field input:focus { border-color: var(--accent); }
-  .btn-enter {
-    width: 100%; background: var(--accent); color: #000;
-    font-family: 'Sora', sans-serif; font-weight: 800; font-size: 15px;
-    padding: 14px; border: none; border-radius: 10px; cursor: pointer;
-    margin-top: 6px; transition: opacity .2s;
-  }
+  .btn-enter { width: 100%; background: var(--accent); color: #000; font-family: 'Sora', sans-serif; font-weight: 800; font-size: 15px; padding: 14px; border: none; border-radius: 10px; cursor: pointer; margin-top: 6px; transition: opacity .2s; }
   .btn-enter:hover { opacity: .88; }
   .login-note { font-size: 12px; color: var(--muted); text-align: center; margin-top: 10px; }
-  .login-error { color: var(--danger); font-size: 13px; margin-top: 10px; text-align: center; display: none; }
+  #login-err { color: var(--danger); font-size: 13px; margin-top: 10px; text-align: center; display: none; }
 
   /* ── PAINEL ── */
-  #dashboard { display: none; padding: 24px 20px; max-width: 1100px; margin: 0 auto; }
-
-  .top-bar {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 28px; flex-wrap: wrap; gap: 12px;
-  }
+  #dashboard { display: none; padding: 24px 20px; max-width: 1200px; margin: 0 auto; }
+  .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
   .top-bar h1 { font-size: 20px; font-weight: 800; }
   .top-bar h1 span { color: var(--accent); }
-  .btn-sm {
-    background: var(--card); border: 1px solid var(--border); color: var(--text);
-    font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600;
-    padding: 8px 14px; border-radius: 8px; cursor: pointer;
-  }
+  .btn-sm { background: var(--card); border: 1px solid var(--border); color: var(--text); font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: border-color .2s, color .2s; }
   .btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Abas de navegação */
+  .tabs { display: flex; gap: 6px; margin-bottom: 24px; flex-wrap: wrap; }
+  .tab { padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; border: 1px solid var(--border); color: var(--muted); background: var(--card); transition: all .2s; }
+  .tab.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
+  /* Seções */
+  .tab-section { display: none; }
+  .tab-section.active { display: block; }
 
   /* KPIs */
   .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap: 14px; margin-bottom: 24px; }
@@ -72,28 +59,85 @@
   .kpi-value { font-size: 26px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
   .kpi-value.g { color: var(--green); }
   .kpi-value.y { color: var(--accent); }
+  .kpi-value.b { color: var(--blue); }
   .kpi-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
 
-  /* Gráficos */
+  /* Chart cards */
   .chart-grid { display: grid; grid-template-columns: 1fr; gap: 18px; }
-  @media (min-width: 700px) { .chart-grid { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 800px) { .chart-grid { grid-template-columns: 1fr 1fr; } }
   .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
   .chart-card.full { grid-column: 1 / -1; }
   .chart-title { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
   .chart-sub   { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
 
-  /* Heatmap */
-  #heatmap-wrap { width: 100%; border-radius: 8px; overflow: hidden; background: #1a1d24; }
-  #heatmap-canvas { display: block; width: 100%; }
+  /* ── HEATMAP NO SITE ── */
+  .heatmap-controls { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+  .heatmap-controls select { background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: 'Sora', sans-serif; font-size: 13px; padding: 6px 10px; border-radius: 7px; outline: none; }
+  .heatmap-legend { display: flex; gap: 16px; font-size: 12px; color: var(--muted); align-items: center; margin-left: auto; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
 
-  /* Tabela */
-  .t { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .t th { text-align: left; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
-  .t td { padding: 10px 6px 10px 0; border-bottom: 1px solid var(--border); vertical-align: middle; }
-  .t tr:last-child td { border: none; }
+  .site-heatmap-wrap {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: #1a1d24;
+  }
+  .site-heatmap-wrap iframe {
+    display: block;
+    width: 100%;
+    border: none;
+    pointer-events: none; /* não interativo — só visual */
+  }
+  #heat-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+  }
+
+  /* ── MAPA DE DOBRA ── */
+  .fold-map {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #1a1d24;
+    height: 320px;
+  }
+  .fold-bar {
+    position: absolute;
+    left: 0; right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    font-size: 12px;
+    font-weight: 700;
+    height: 28px;
+    border-top: 1px dashed;
+    transition: opacity .3s;
+  }
+  .fold-fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    transition: width .6s ease;
+  }
+  .fold-label { position: relative; z-index: 2; color: rgba(255,255,255,0.9); }
+  .fold-pct   { position: relative; z-index: 2; font-family: 'JetBrains Mono', monospace; }
+
+  /* ── CAMPANHA ── */
+  .utm-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .utm-table th { text-align: left; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  .utm-table td { padding: 10px 8px 10px 0; border-bottom: 1px solid var(--border); }
+  .utm-table tr:last-child td { border: none; }
   .pill { display: inline-block; font-weight: 700; font-size: 11px; padding: 2px 9px; border-radius: 20px; }
   .pill.g { background: var(--green); color: #000; }
   .pill.y { background: var(--accent); color: #000; }
+  .pill.b { background: var(--blue);   color: #fff; }
+
+  /* UTM param box */
+  .utm-param-box { background: #1a1d24; border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--green); word-break: break-all; line-height: 1.8; margin-top: 4px; }
+  .copy-btn { background: var(--accent); color: #000; font-family: 'Sora', sans-serif; font-weight: 700; font-size: 12px; padding: 6px 14px; border: none; border-radius: 7px; cursor: pointer; margin-top: 10px; }
 
   /* Utils */
   .spin-wrap { text-align: center; padding: 36px; color: var(--muted); font-size: 13px; }
@@ -102,6 +146,11 @@
   .err { color: var(--danger); font-size: 13px; padding: 16px 0; }
   .empty { color: var(--muted); font-size: 13px; padding: 16px 0; text-align: center; }
   .global-err { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3); border-radius: 10px; padding: 12px 16px; font-size: 13px; color: var(--danger); margin-bottom: 18px; }
+
+  .t { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .t th { text-align: left; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  .t td { padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .t tr:last-child td { border: none; }
 </style>
 </head>
 <body>
@@ -110,20 +159,18 @@
 <div id="login-screen">
   <div class="login-box">
     <h2>📊 Painel Analytics</h2>
-    <p>Use a <strong style="color:var(--accent)">service_role key</strong> do Supabase para acessar os dados.<br>
+    <p>Use a <strong style="color:var(--accent)">service_role key</strong> do Supabase.<br>
        Supabase → Settings → API → <em>service_role secret</em>.</p>
-
     <div class="field">
       <label>URL do Supabase</label>
       <input id="inp-url" type="text" value="https://raoglzfmdxrynpwjmilp.supabase.co">
     </div>
     <div class="field">
-      <label>Service Role Key (secreta)</label>
+      <label>Service Role Key</label>
       <input id="inp-key" type="password" placeholder="eyJhbGci...">
     </div>
-
     <button class="btn-enter" onclick="login()">Acessar Painel →</button>
-    <div class="login-error" id="login-err">❌ Chave inválida ou sem acesso. Verifique a service_role key.</div>
+    <div id="login-err"></div>
     <p class="login-note">Credenciais salvas só neste navegador.</p>
   </div>
 </div>
@@ -140,358 +187,600 @@
 
   <div id="gerr"></div>
 
-  <!-- KPIs -->
-  <div class="kpi-grid">
-    <div class="kpi-card"><div class="kpi-label">Sessões</div><div class="kpi-value y" id="k-sess">—</div><div class="kpi-sub">visitas únicas</div></div>
-    <div class="kpi-card"><div class="kpi-label">Tempo médio na página</div><div class="kpi-value g" id="k-time">—</div><div class="kpi-sub">segundos</div></div>
-    <div class="kpi-card"><div class="kpi-label">Viram o vídeo (5s+)</div><div class="kpi-value y" id="k-vpct">—</div><div class="kpi-sub">% das visitas</div></div>
-    <div class="kpi-card"><div class="kpi-label">Tempo médio vídeo</div><div class="kpi-value g" id="k-vavg">—</div><div class="kpi-sub">segundos assistidos</div></div>
-    <div class="kpi-card"><div class="kpi-label">Cliques WhatsApp</div><div class="kpi-value g" id="k-cta">—</div><div class="kpi-sub">toques no botão</div></div>
-    <div class="kpi-card"><div class="kpi-label">Taxa de conversão</div><div class="kpi-value y" id="k-conv">—</div><div class="kpi-sub">clicou CTA / sessões</div></div>
+  <!-- ABAS -->
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('resumo')">📈 Resumo</div>
+    <div class="tab" onclick="showTab('heatmap')">🔥 Mapa de Calor</div>
+    <div class="tab" onclick="showTab('scroll')">📜 Dobra da Página</div>
+    <div class="tab" onclick="showTab('video')">🎬 Vídeo</div>
+    <div class="tab" onclick="showTab('campanha')">📣 Campanhas</div>
   </div>
 
-  <div class="chart-grid">
-
-    <!-- Curva abandono vídeo -->
-    <div class="chart-card full">
-      <div class="chart-title">📉 Curva de abandono do vídeo</div>
-      <div class="chart-sub">% de pessoas ainda assistindo em cada segundo</div>
-      <div id="vl" class="spin-wrap"><div class="spinner"></div>Carregando...</div>
-      <canvas id="vchart" style="display:none"></canvas>
+  <!-- ═══════════════ ABA: RESUMO ═══════════════ -->
+  <div id="tab-resumo" class="tab-section active">
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-label">Sessões</div><div class="kpi-value y" id="k-sess">—</div><div class="kpi-sub">visitas únicas</div></div>
+      <div class="kpi-card"><div class="kpi-label">Tempo médio</div><div class="kpi-value g" id="k-time">—</div><div class="kpi-sub">segundos na página</div></div>
+      <div class="kpi-card"><div class="kpi-label">Viram vídeo 5s+</div><div class="kpi-value y" id="k-vpct">—</div><div class="kpi-sub">% das visitas</div></div>
+      <div class="kpi-card"><div class="kpi-label">Cliques WhatsApp</div><div class="kpi-value g" id="k-cta">—</div><div class="kpi-sub">toques no botão</div></div>
+      <div class="kpi-card"><div class="kpi-label">Taxa conversão</div><div class="kpi-value y" id="k-conv">—</div><div class="kpi-sub">CTA / sessões</div></div>
+      <div class="kpi-card"><div class="kpi-label">Via campanha</div><div class="kpi-value b" id="k-utm">—</div><div class="kpi-sub">sessões com UTM</div></div>
     </div>
 
-    <!-- Tempo na página -->
-    <div class="chart-card">
-      <div class="chart-title">⏱ Tempo na página</div>
-      <div class="chart-sub">Distribuição por faixa de tempo</div>
-      <div id="tl" class="spin-wrap"><div class="spinner"></div></div>
-      <canvas id="tchart" style="display:none"></canvas>
-    </div>
-
-    <!-- Heatmap -->
-    <div class="chart-card">
-      <div class="chart-title">🖱 Mapa de toques</div>
-      <div class="chart-sub">Onde as pessoas clicam/tocam na tela</div>
-      <div id="hl" class="spin-wrap"><div class="spinner"></div></div>
-      <div id="heatmap-wrap" style="display:none"><canvas id="heatmap-canvas"></canvas></div>
-    </div>
-
-    <!-- Tabela cliques -->
-    <div class="chart-card full">
-      <div class="chart-title">🎯 Elementos mais clicados</div>
-      <div class="chart-sub">Ranking de interações por botão/elemento</div>
-      <div id="cl" class="spin-wrap"><div class="spinner"></div></div>
-      <div id="ctable" style="display:none">
-        <table class="t">
-          <thead><tr><th style="width:60%">Texto</th><th>Tag</th><th>Cliques</th></tr></thead>
-          <tbody id="ctbody"></tbody>
-        </table>
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-title">⏱ Tempo na página</div>
+        <div class="chart-sub">Distribuição por faixa</div>
+        <div id="tl" class="spin-wrap"><div class="spinner"></div></div>
+        <canvas id="tchart" style="display:none"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">🎯 Botões mais clicados</div>
+        <div class="chart-sub">Top 8 elementos</div>
+        <div id="cl" class="spin-wrap"><div class="spinner"></div></div>
+        <div id="ctable" style="display:none">
+          <table class="t">
+            <thead><tr><th>Texto</th><th>Tag</th><th>#</th></tr></thead>
+            <tbody id="ctbody"></tbody>
+          </table>
+        </div>
       </div>
     </div>
-
   </div>
-</div>
+
+  <!-- ═══════════════ ABA: HEATMAP ═══════════════ -->
+  <div id="tab-heatmap" class="tab-section">
+    <div class="chart-card full" style="margin-bottom:0">
+      <div class="chart-title">🔥 Mapa de calor sobreposto ao site</div>
+      <div class="chart-sub">Pontos quentes = onde as pessoas mais clicam/tocam</div>
+
+      <div class="heatmap-controls">
+        <span style="font-size:13px;color:var(--muted)">Intensidade:</span>
+        <select id="heat-radius" onchange="renderHeatmap()">
+          <option value="30">Suave</option>
+          <option value="22" selected>Normal</option>
+          <option value="14">Preciso</option>
+        </select>
+        <div class="heatmap-legend">
+          <span><span class="legend-dot" style="background:rgba(240,165,0,0.9);display:inline-block"></span> Alta</span>
+          <span><span class="legend-dot" style="background:rgba(240,165,0,0.4);display:inline-block"></span> Média</span>
+          <span><span class="legend-dot" style="background:rgba(240,165,0,0.12);display:inline-block"></span> Baixa</span>
+        </div>
+      </div>
+
+      <div id="hl" class="spin-wrap"><div class="spinner"></div>Carregando cliques...</div>
+
+      <div class="site-heatmap-wrap" id="heat-site-wrap" style="display:none">
+        <!-- iframe do site real — carregado com o mesmo domínio -->
+        <iframe id="site-iframe" src="index.html" scrolling="no" id="site-frame"></iframe>
+        <canvas id="heat-overlay"></canvas>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-top:10px">
+        💡 O mapa mostra o site na escala real. Role para ver as diferentes seções.
+        Caso o site esteja em outro domínio, use o painel lateral sem iframe.
+      </p>
+    </div>
+  </div>
+
+  <!-- ═══════════════ ABA: DOBRA ═══════════════ -->
+  <div id="tab-scroll" class="tab-section">
+    <div class="chart-card full">
+      <div class="chart-title">📜 Mapa de dobra da página</div>
+      <div class="chart-sub">% do total de usuários que chegou a cada ponto da página</div>
+
+      <div id="sl" class="spin-wrap"><div class="spinner"></div>Carregando scroll...</div>
+
+      <div id="fold-container" style="display:none">
+        <!-- Visualização estilo página com linhas de corte -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start">
+
+          <!-- Lado esquerdo: barras horizontais -->
+          <div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:14px;font-weight:700;text-transform:uppercase;letter-spacing:.8px">Usuários que chegaram até aqui</div>
+            <div id="fold-bars"></div>
+          </div>
+
+          <!-- Lado direito: representação visual da página -->
+          <div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:14px;font-weight:700;text-transform:uppercase;letter-spacing:.8px">Visualização da página</div>
+            <div class="fold-map" id="fold-map">
+              <!-- gerado via JS -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Tabela detalhada -->
+        <div style="margin-top:24px">
+          <table class="t">
+            <thead><tr><th>Profundidade</th><th>Sessões que chegaram</th><th>% do total</th><th>Seção aproximada</th></tr></thead>
+            <tbody id="fold-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ ABA: VÍDEO ═══════════════ -->
+  <div id="tab-video" class="tab-section">
+    <div class="chart-card full">
+      <div class="chart-title">📉 Curva de abandono do vídeo</div>
+      <div class="chart-sub">Quantas pessoas ainda estavam assistindo em cada segundo</div>
+      <div id="vl" class="spin-wrap"><div class="spinner"></div>Carregando...</div>
+      <canvas id="vchart" style="display:none"></canvas>
+
+      <div id="video-milestones" style="display:none;margin-top:20px">
+        <div style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">Marcos de retenção</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px" id="milestone-cards"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ ABA: CAMPANHAS ═══════════════ -->
+  <div id="tab-campanha" class="tab-section">
+    <div class="chart-grid">
+
+      <!-- Tabela de campanhas -->
+      <div class="chart-card full">
+        <div class="chart-title">📣 Desempenho por campanha</div>
+        <div class="chart-sub">Sessões agrupadas por utm_campaign</div>
+        <div id="utm-load" class="spin-wrap"><div class="spinner"></div></div>
+        <div id="utm-table-wrap" style="display:none">
+          <table class="utm-table">
+            <thead>
+              <tr>
+                <th>Campanha</th>
+                <th>Fonte</th>
+                <th>Mídia</th>
+                <th>Sessões</th>
+                <th>Cliques CTA</th>
+                <th>Conversão</th>
+              </tr>
+            </thead>
+            <tbody id="utm-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Parâmetro UTM para Meta Ads -->
+      <div class="chart-card full">
+        <div class="chart-title">🔗 Parâmetro UTM para Meta Ads</div>
+        <div class="chart-sub">Cole no campo "URL do site" da sua campanha no Meta Ads Manager</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.7">
+          Adicione este parâmetro ao final da URL do seu site no Meta Ads. O <code style="background:#1a1d24;padding:2px 6px;border-radius:4px;font-size:11px">{{...}}</code> é preenchido automaticamente pelo Meta com o nome real da campanha.
+        </div>
+        <div class="utm-param-box" id="utm-param-display">
+          ?utm_source=facebook&amp;utm_medium=cpc&amp;utm_campaign={{campaign.name}}&amp;utm_content={{ad.name}}&amp;utm_term={{adset.name}}
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <button class="copy-btn" onclick="copyUTM()">📋 Copiar parâmetro</button>
+          <button class="copy-btn" style="background:var(--blue);color:#fff" onclick="copyFullURL()">🔗 Copiar URL completa</button>
+        </div>
+        <div id="copy-ok" style="font-size:12px;color:var(--green);margin-top:8px;display:none">✅ Copiado!</div>
+
+        <div style="margin-top:24px;border-top:1px solid var(--border);padding-top:20px">
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px">Como configurar no Meta Ads:</div>
+          <ol style="font-size:13px;color:var(--muted);line-height:2.2;padding-left:18px">
+            <li>Abra o <strong style="color:var(--text)">Meta Ads Manager</strong></li>
+            <li>Edite sua campanha → Conjunto de anúncios → Anúncio</li>
+            <li>Em <strong style="color:var(--text)">"URL do site"</strong>, coloque seu domínio + o parâmetro acima</li>
+            <li>Exemplo: <code style="background:#1a1d24;padding:2px 6px;border-radius:4px;font-size:11px;color:var(--green)">https://seusite.com/?utm_source=facebook&utm_medium=cpc&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}</code></li>
+            <li>No painel aqui, os dados aparecem na aba <strong style="color:var(--accent)">Campanhas</strong> por nome de campanha</li>
+          </ol>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /dashboard -->
 
 <script>
-// ── CONFIG ────────────────────────────────────────────────
-var URL = '', KEY = '';
+var SUPA_URL = '', SUPA_KEY = '';
 var vChart = null, tChart = null;
+var heatData = []; // cache dos cliques para o heatmap
 
 // ── AUTH ──────────────────────────────────────────────────
 function login() {
   var u = document.getElementById('inp-url').value.trim().replace(/\/$/, '');
   var k = document.getElementById('inp-key').value.trim();
-  if (!u || !k) { showLoginErr('Preencha os dois campos.'); return; }
-
-  // Testa conexão antes de abrir
+  if (!u || !k) { setLoginErr('Preencha os dois campos.'); return; }
   fetch(u + '/rest/v1/sessions?limit=1', {
     headers: { 'apikey': k, 'Authorization': 'Bearer ' + k }
   }).then(function(r) {
-    if (!r.ok) { showLoginErr('Erro ' + r.status + ': verifique a chave.'); return; }
-    URL = u; KEY = k;
-    localStorage.setItem('an_url', u);
-    localStorage.setItem('an_key', k);
+    if (!r.ok) { setLoginErr('Erro ' + r.status + ': verifique a service_role key.'); return; }
+    SUPA_URL = u; SUPA_KEY = k;
+    localStorage.setItem('an_url', u); localStorage.setItem('an_key', k);
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('dashboard').style.display    = 'block';
     loadAll();
-  }).catch(function() { showLoginErr('Sem conexão com o Supabase. Verifique a URL.'); });
+  }).catch(function() { setLoginErr('Sem conexão. Verifique a URL.'); });
 }
+function setLoginErr(m) { var e = document.getElementById('login-err'); e.textContent = '❌ ' + m; e.style.display = 'block'; }
+function doLogout() { localStorage.removeItem('an_url'); localStorage.removeItem('an_key'); location.reload(); }
 
-function showLoginErr(msg) {
-  var el = document.getElementById('login-err');
-  el.textContent = '❌ ' + msg;
-  el.style.display = 'block';
-}
-
-function doLogout() {
-  localStorage.removeItem('an_url'); localStorage.removeItem('an_key');
-  location.reload();
-}
-
-// Auto-login se tiver credenciais salvas
 window.addEventListener('DOMContentLoaded', function() {
-  var u = localStorage.getItem('an_url');
-  var k = localStorage.getItem('an_key');
+  var u = localStorage.getItem('an_url'), k = localStorage.getItem('an_key');
   if (u && k) {
     document.getElementById('inp-url').value = u;
     document.getElementById('inp-key').value = k;
-    URL = u; KEY = k;
+    SUPA_URL = u; SUPA_KEY = k;
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('dashboard').style.display    = 'block';
     loadAll();
   }
 });
 
+// ── ABAS ──────────────────────────────────────────────────
+function showTab(name) {
+  document.querySelectorAll('.tab-section').forEach(function(s) { s.classList.remove('active'); });
+  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+  document.getElementById('tab-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (name === 'heatmap') setTimeout(renderHeatmap, 100);
+}
+
 // ── API ───────────────────────────────────────────────────
 function api(path) {
-  return fetch(URL + '/rest/v1/' + path, {
-    headers: {
-      'apikey': KEY,
-      'Authorization': 'Bearer ' + KEY,
-      'Content-Type': 'application/json'
-    }
+  return fetch(SUPA_URL + '/rest/v1/' + path, {
+    headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY, 'Content-Type': 'application/json' }
   }).then(function(r) {
     if (!r.ok) return r.text().then(function(t) { throw new Error('HTTP ' + r.status + ': ' + t); });
     return r.json();
   });
 }
-
-function gerr(msg) {
-  document.getElementById('gerr').innerHTML = '<div class="global-err">⚠️ ' + msg + '</div>';
-}
+function gerr(m) { document.getElementById('gerr').innerHTML = '<div class="global-err">⚠️ ' + m + '</div>'; }
 
 // ── LOAD ALL ──────────────────────────────────────────────
 function loadAll() {
   document.getElementById('gerr').innerHTML = '';
   loadKpis();
-  loadVideoChart();
   loadTimeChart();
-  loadHeatmap();
   loadClickTable();
+  loadHeatData();
+  loadScrollDepth();
+  loadVideoChart();
+  loadUTMTable();
 }
 
 // ── KPIs ──────────────────────────────────────────────────
 function loadKpis() {
-  // Total de sessões
-  api('sessions?select=session_id,time_on_page').then(function(rows) {
+  api('sessions?select=session_id,time_on_page,utm_source').then(function(rows) {
     var total = rows.length;
     document.getElementById('k-sess').textContent = total;
-
-    // Tempo médio (só quem tem valor)
     var withTime = rows.filter(function(r) { return r.time_on_page > 0; });
-    var avg = withTime.length
-      ? Math.round(withTime.reduce(function(a, r) { return a + r.time_on_page; }, 0) / withTime.length)
-      : 0;
+    var avg = withTime.length ? Math.round(withTime.reduce(function(a, r) { return a + r.time_on_page; }, 0) / withTime.length) : 0;
     document.getElementById('k-time').textContent = avg + 's';
+    var withUTM = rows.filter(function(r) { return r.utm_source; }).length;
+    document.getElementById('k-utm').textContent = withUTM + ' (' + (total ? Math.round(withUTM/total*100) : 0) + '%)';
 
-    // % que viram o vídeo (5s+)
     api('video_events?select=session_id&second=gte.5').then(function(ve) {
       var uniq = new Set(ve.map(function(r) { return r.session_id; })).size;
-      document.getElementById('k-vpct').textContent = total ? Math.round(uniq / total * 100) + '%' : '0%';
-    }).catch(function() {});
-
-    // Cliques em CTA
-    api('click_events?select=session_id,element_text,element_tag').then(function(ce) {
-      var cta = ce.filter(function(r) {
-        var t = (r.element_text || '').toUpperCase();
-        return t.includes('WHATSAPP') || t.includes('RESTAURAR') || t.includes('FOTO') || t.includes('RAMON') || r.element_tag === 'A';
-      });
-      document.getElementById('k-cta').textContent = cta.length;
-      var uniqCta = new Set(cta.map(function(r) { return r.session_id; })).size;
-      document.getElementById('k-conv').textContent = total ? Math.round(uniqCta / total * 100) + '%' : '0%';
-    }).catch(function() {});
-
-  }).catch(function(e) { gerr('Sessões: ' + e.message); });
-
-  // Tempo médio vídeo
-  api('video_events?select=session_id,second&event_type=eq.progress').then(function(ve) {
-    var bySess = {};
-    ve.forEach(function(r) {
-      if (!bySess[r.session_id] || r.second > bySess[r.session_id]) bySess[r.session_id] = r.second;
+      document.getElementById('k-vpct').textContent = total ? Math.round(uniq/total*100) + '%' : '0%';
     });
-    var vals = Object.values(bySess);
-    var avg = vals.length ? Math.round(vals.reduce(function(a, v) { return a + v; }, 0) / vals.length) : 0;
-    document.getElementById('k-vavg').textContent = avg + 's';
-  }).catch(function() {});
+    api('click_events?select=session_id,element_text,element_tag').then(function(ce) {
+      var cta = ce.filter(isCTA);
+      document.getElementById('k-cta').textContent = cta.length;
+      var uniq = new Set(cta.map(function(r) { return r.session_id; })).size;
+      document.getElementById('k-conv').textContent = total ? Math.round(uniq/total*100) + '%' : '0%';
+    });
+  }).catch(function(e) { gerr('KPIs: ' + e.message); });
 }
 
-// ── CURVA DE VÍDEO ────────────────────────────────────────
-function loadVideoChart() {
-  setLoad('vl', true); document.getElementById('vchart').style.display = 'none';
-
-  api('video_events?select=session_id,second&event_type=eq.progress&order=second.asc&limit=50000')
-    .then(function(rows) {
-      var maxBySess = {};
-      rows.forEach(function(r) {
-        if (maxBySess[r.session_id] === undefined || r.second > maxBySess[r.session_id])
-          maxBySess[r.session_id] = r.second;
-      });
-      var total = Object.keys(maxBySess).length;
-      if (!total) { document.getElementById('vl').innerHTML = '<p class="empty">Sem dados de vídeo ainda.<br>O vídeo precisa ser assistido pelo menos 1s.</p>'; return; }
-
-      var maxSec = Math.max.apply(null, Object.values(maxBySess));
-      var step   = Math.max(1, Math.floor(maxSec / 60));
-      var labels = [], data = [];
-      for (var s = 0; s <= maxSec; s += step) {
-        var cnt = Object.values(maxBySess).filter(function(m) { return m >= s; }).length;
-        labels.push(s + 's');
-        data.push(Math.round(cnt / total * 100));
-      }
-
-      setLoad('vl', false);
-      var canvas = document.getElementById('vchart');
-      canvas.style.display = 'block';
-      if (vChart) vChart.destroy();
-      vChart = new Chart(canvas, {
-        type: 'line',
-        data: { labels: labels, datasets: [{
-          label: '% assistindo', data: data,
-          borderColor: '#f0a500', backgroundColor: 'rgba(240,165,0,0.07)',
-          borderWidth: 2.5, pointRadius: 0, fill: true, tension: 0.3
-        }]},
-        options: {
-          responsive: true,
-          plugins: { legend: { display: false }, tooltip: { callbacks: {
-            label: function(c) { return c.parsed.y + '% ainda assistindo'; }
-          }}},
-          scales: {
-            x: { ticks: { color: '#6b7280', maxTicksLimit: 14 }, grid: { color: '#252830' } },
-            y: { min: 0, max: 100, ticks: { color: '#6b7280', callback: function(v) { return v + '%'; } }, grid: { color: '#252830' } }
-          }
-        }
-      });
-    }).catch(function(e) { document.getElementById('vl').innerHTML = '<p class="err">Erro: ' + e.message + '</p>'; });
+function isCTA(r) {
+  var t = (r.element_text || '').toUpperCase();
+  return t.includes('WHATSAPP') || t.includes('RESTAURAR') || t.includes('FOTO') || t.includes('RAMON') || r.element_tag === 'A';
 }
 
 // ── TEMPO NA PÁGINA ───────────────────────────────────────
 function loadTimeChart() {
   setLoad('tl', true); document.getElementById('tchart').style.display = 'none';
-
   api('sessions?select=time_on_page&time_on_page=gt.0').then(function(rows) {
-    var b = {'<30s': 0, '30-60s': 0, '1-2min': 0, '2-5min': 0, '5min+': 0};
+    var b = {'<30s':0,'30-60s':0,'1-2min':0,'2-5min':0,'5min+':0};
     rows.forEach(function(r) {
       var t = r.time_on_page;
-      if      (t < 30)  b['<30s']++;
-      else if (t < 60)  b['30-60s']++;
-      else if (t < 120) b['1-2min']++;
-      else if (t < 300) b['2-5min']++;
-      else              b['5min+']++;
+      if (t < 30) b['<30s']++; else if (t < 60) b['30-60s']++; else if (t < 120) b['1-2min']++; else if (t < 300) b['2-5min']++; else b['5min+']++;
     });
-
     setLoad('tl', false);
-    var canvas = document.getElementById('tchart');
-    canvas.style.display = 'block';
+    var canvas = document.getElementById('tchart'); canvas.style.display = 'block';
     if (tChart) tChart.destroy();
     tChart = new Chart(canvas, {
       type: 'bar',
-      data: { labels: Object.keys(b), datasets: [{
-        data: Object.values(b),
-        backgroundColor: ['#ef4444','#f97316','#f0a500','#84cc16','#25D366'],
-        borderRadius: 6
-      }]},
-      options: {
-        responsive: true,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { ticks: { color: '#6b7280' }, grid: { display: false } },
-          y: { ticks: { color: '#6b7280' }, grid: { color: '#252830' } }
-        }
-      }
+      data: { labels: Object.keys(b), datasets: [{ data: Object.values(b), backgroundColor: ['#ef4444','#f97316','#f0a500','#84cc16','#25D366'], borderRadius: 6 }]},
+      options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#6b7280' }, grid: { display: false } }, y: { ticks: { color: '#6b7280' }, grid: { color: '#252830' } } } }
     });
-  }).catch(function(e) { document.getElementById('tl').innerHTML = '<p class="err">Erro: ' + e.message + '</p>'; });
-}
-
-// ── HEATMAP ───────────────────────────────────────────────
-function loadHeatmap() {
-  setLoad('hl', true);
-  document.getElementById('heatmap-wrap').style.display = 'none';
-
-  api('click_events?select=x_pct,y_pct&limit=5000').then(function(rows) {
-    setLoad('hl', false);
-    var wrap = document.getElementById('heatmap-wrap');
-    wrap.style.display = 'block';
-
-    var W = wrap.clientWidth || 320, H = 300;
-    var canvas = document.getElementById('heatmap-canvas');
-    canvas.width = W; canvas.height = H;
-    var ctx = canvas.getContext('2d');
-
-    ctx.fillStyle = '#1a1d24';
-    ctx.fillRect(0, 0, W, H);
-
-    if (!rows.length) {
-      ctx.fillStyle = 'rgba(107,114,128,0.6)';
-      ctx.font = '14px Sora, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('Sem cliques registrados ainda', W/2, H/2);
-      return;
-    }
-
-    rows.forEach(function(r) {
-      var x = (r.x_pct / 100) * W;
-      var y = (r.y_pct / 100) * H;
-      var g = ctx.createRadialGradient(x, y, 0, x, y, 24);
-      g.addColorStop(0, 'rgba(240,165,0,0.4)');
-      g.addColorStop(1, 'rgba(240,165,0,0)');
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.arc(x, y, 24, 0, Math.PI * 2);
-      ctx.fill();
-    });
-
-    // Zona CTA (parte inferior)
-    ctx.strokeStyle = 'rgba(37,211,102,0.4)';
-    ctx.lineWidth = 1.5;
-    ctx.setLineDash([5, 5]);
-    ctx.strokeRect(8, H * 0.68, W - 16, H * 0.3);
-    ctx.fillStyle = 'rgba(37,211,102,0.7)';
-    ctx.font = '11px Sora, sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText('zona CTA', 14, H * 0.68 + 16);
-  }).catch(function(e) { document.getElementById('hl').innerHTML = '<p class="err">Erro: ' + e.message + '</p>'; });
+  }).catch(function(e) { document.getElementById('tl').innerHTML = '<p class="err">' + e.message + '</p>'; });
 }
 
 // ── TABELA DE CLIQUES ─────────────────────────────────────
 function loadClickTable() {
-  setLoad('cl', true);
-  document.getElementById('ctable').style.display = 'none';
-
+  setLoad('cl', true); document.getElementById('ctable').style.display = 'none';
   api('click_events?select=element_tag,element_text&limit=20000').then(function(rows) {
     var counts = {};
     rows.forEach(function(r) {
-      var txt = (r.element_text || '').replace(/\s+/g, ' ').trim().slice(0, 60) || '(sem texto)';
-      var key = (r.element_tag || '?') + '||' + txt;
-      counts[key] = (counts[key] || 0) + 1;
+      var txt = (r.element_text || '').replace(/\s+/g,' ').trim().slice(0,50) || '(sem texto)';
+      var key = (r.element_tag||'?') + '||' + txt;
+      counts[key] = (counts[key]||0) + 1;
+    });
+    var sorted = Object.entries(counts).sort(function(a,b){return b[1]-a[1];}).slice(0,8);
+    setLoad('cl', false); document.getElementById('ctable').style.display = 'block';
+    document.getElementById('ctbody').innerHTML = sorted.map(function(e) {
+      var p = e[0].split('||'); var tag = p[0]; var txt = p.slice(1).join('||');
+      var isCta = isCTA({ element_text: txt, element_tag: tag });
+      return '<tr><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(txt)+'">'+esc(txt)+'</td><td><code style="color:var(--muted);font-size:11px">'+esc(tag)+'</code></td><td><span class="pill '+(isCta?'g':'y')+'">'+e[1]+'</span></td></tr>';
+    }).join('');
+  }).catch(function(e) { document.getElementById('cl').innerHTML = '<p class="err">'+e.message+'</p>'; });
+}
+
+// ── HEATMAP SOBRE O SITE ──────────────────────────────────
+function loadHeatData() {
+  api('click_events?select=x_pct,y_pct&limit=10000').then(function(rows) {
+    heatData = rows;
+    // Só renderiza se a aba heatmap estiver ativa
+    if (document.getElementById('tab-heatmap').classList.contains('active')) {
+      renderHeatmap();
+    } else {
+      setLoad('hl', false);
+      document.getElementById('heat-site-wrap').style.display = 'block';
+      document.getElementById('hl').style.display = 'none';
+    }
+  }).catch(function(e) { document.getElementById('hl').innerHTML = '<p class="err">'+e.message+'</p>'; });
+}
+
+function renderHeatmap() {
+  if (!heatData) return;
+
+  var wrap = document.getElementById('heat-site-wrap');
+  var iframe = document.getElementById('site-iframe');
+  var overlay = document.getElementById('heat-overlay');
+  var radius = parseInt(document.getElementById('heat-radius').value);
+
+  document.getElementById('hl').style.display = 'none';
+  wrap.style.display = 'block';
+
+  // Define altura do iframe baseada na proporção do site (site é ~480px wide, altura aprox)
+  var iframeW = wrap.clientWidth || 480;
+  var siteRatio = 3.2; // proporção altura/largura estimada do site
+  var iframeH = Math.round(iframeW * siteRatio);
+
+  iframe.style.width  = iframeW + 'px';
+  iframe.style.height = iframeH + 'px';
+
+  // Espera iframe carregar para dimensionar overlay
+  function drawHeat() {
+    overlay.width  = iframeW;
+    overlay.height = iframeH;
+    overlay.style.width  = iframeW + 'px';
+    overlay.style.height = iframeH + 'px';
+
+    var ctx = overlay.getContext('2d');
+    ctx.clearRect(0, 0, iframeW, iframeH);
+
+    if (!heatData.length) {
+      ctx.fillStyle = 'rgba(107,114,128,0.5)';
+      ctx.font = '14px Sora, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Sem cliques ainda', iframeW/2, iframeH/2);
+      return;
+    }
+
+    // Renderiza pontos de calor
+    heatData.forEach(function(r) {
+      var x = (r.x_pct / 100) * iframeW;
+      var y = (r.y_pct / 100) * iframeH;
+      var g = ctx.createRadialGradient(x, y, 0, x, y, radius);
+      g.addColorStop(0,   'rgba(240,80,0,0.55)');
+      g.addColorStop(0.4, 'rgba(240,165,0,0.25)');
+      g.addColorStop(1,   'rgba(240,165,0,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  }
+
+  iframe.onload = drawHeat;
+  if (iframe.contentDocument && iframe.contentDocument.readyState === 'complete') drawHeat();
+}
+
+// ── SCROLL DEPTH / DOBRA ──────────────────────────────────
+function loadScrollDepth() {
+  setLoad('sl', true);
+  document.getElementById('fold-container').style.display = 'none';
+
+  Promise.all([
+    api('sessions?select=session_id'),
+    api('scroll_events?select=session_id,scroll_pct')
+  ]).then(function(results) {
+    var sessions = results[0];
+    var scrolls  = results[1];
+    var total = sessions.length;
+    if (!total) { document.getElementById('sl').innerHTML = '<p class="empty">Sem dados ainda. Aguarde visitas.</p>'; return; }
+
+    var reached = { 25: 0, 50: 0, 75: 0, 100: 0 };
+    var bySess = {};
+    scrolls.forEach(function(r) {
+      if (!bySess[r.session_id]) bySess[r.session_id] = new Set();
+      bySess[r.session_id].add(r.scroll_pct);
+    });
+    Object.values(bySess).forEach(function(marks) {
+      [25, 50, 75, 100].forEach(function(m) { if (marks.has(m)) reached[m]++; });
     });
 
-    var sorted = Object.entries(counts)
-      .sort(function(a, b) { return b[1] - a[1]; })
-      .slice(0, 12);
+    var sections = {
+      25:  'Vídeo / CTA 1',
+      50:  'Como funciona',
+      75:  'Carrossel antes/depois',
+      100: 'CTA final / rodapé'
+    };
 
-    setLoad('cl', false);
-    document.getElementById('ctable').style.display = 'block';
-    var tbody = document.getElementById('ctbody');
-    tbody.innerHTML = sorted.map(function(e) {
-      var parts = e[0].split('||');
-      var tag   = parts[0];
-      var txt   = parts.slice(1).join('||');
-      var isCta = txt.toUpperCase().includes('WHATSAPP') || txt.toUpperCase().includes('RESTAURAR') || txt.toUpperCase().includes('RAMON') || txt.toUpperCase().includes('FOTO');
+    var colors = { 25: '#25D366', 50: '#84cc16', 75: '#f0a500', 100: '#ef4444' };
+
+    setLoad('sl', false);
+    document.getElementById('fold-container').style.display = 'block';
+
+    // Barras horizontais
+    var barsHtml = '';
+    [25, 50, 75, 100].forEach(function(m) {
+      var pct = total ? Math.round(reached[m] / total * 100) : 0;
+      barsHtml += '<div style="margin-bottom:18px">'
+        + '<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px">'
+        + '<span style="font-weight:700;color:' + colors[m] + '">' + m + '% da página</span>'
+        + '<span style="font-family:\'JetBrains Mono\',monospace;font-weight:700">' + pct + '% <span style="color:var(--muted);font-size:11px">(' + reached[m] + ' sess.)</span></span>'
+        + '</div>'
+        + '<div style="background:var(--border);border-radius:6px;height:10px;overflow:hidden">'
+        + '<div style="background:' + colors[m] + ';width:' + pct + '%;height:100%;border-radius:6px;transition:width .8s ease"></div>'
+        + '</div></div>';
+    });
+    document.getElementById('fold-bars').innerHTML = barsHtml;
+
+    // Visualização da página
+    var mapEl = document.getElementById('fold-map');
+    mapEl.innerHTML = '';
+    var mh = mapEl.clientHeight || 320;
+    [100, 75, 50, 25].forEach(function(m) {
+      var pct = total ? Math.round(reached[m] / total * 100) : 0;
+      var topPos = (100 - m) / 100 * mh;
+      var bar = document.createElement('div');
+      bar.className = 'fold-bar';
+      bar.style.top        = topPos + 'px';
+      bar.style.borderColor = colors[m] + '80';
+      bar.innerHTML =
+        '<div class="fold-fill" style="background:' + colors[m] + '18;width:100%"></div>'
+        + '<span class="fold-label" style="color:' + colors[m] + '">' + m + '%</span>'
+        + '<span class="fold-pct" style="color:' + colors[m] + '">' + pct + '% chegaram</span>';
+      mapEl.appendChild(bar);
+    });
+
+    // Tabela
+    var rows = [25, 50, 75, 100].map(function(m) {
+      var pct = total ? Math.round(reached[m] / total * 100) : 0;
+      return '<tr><td><span style="color:' + colors[m] + ';font-weight:800">' + m + '% da página</span></td>'
+        + '<td><span class="pill" style="background:' + colors[m] + ';color:#000">' + reached[m] + '</span></td>'
+        + '<td style="font-family:\'JetBrains Mono\',monospace;font-weight:700">' + pct + '%</td>'
+        + '<td style="color:var(--muted)">' + sections[m] + '</td></tr>';
+    });
+    document.getElementById('fold-table-body').innerHTML = rows.join('');
+
+  }).catch(function(e) { document.getElementById('sl').innerHTML = '<p class="err">Erro: ' + e.message + '</p>'; });
+}
+
+// ── CURVA VÍDEO ───────────────────────────────────────────
+function loadVideoChart() {
+  setLoad('vl', true); document.getElementById('vchart').style.display = 'none';
+  document.getElementById('video-milestones').style.display = 'none';
+
+  Promise.all([
+    api('sessions?select=session_id'),
+    api('video_events?select=session_id,second&event_type=eq.progress&order=second.asc&limit=50000')
+  ]).then(function(results) {
+    var totalSessions = results[0].length;
+    var rows = results[1];
+
+    var maxBySess = {};
+    rows.forEach(function(r) { if (maxBySess[r.session_id] === undefined || r.second > maxBySess[r.session_id]) maxBySess[r.session_id] = r.second; });
+    var totalWatchers = Object.keys(maxBySess).length;
+    if (!totalWatchers) { document.getElementById('vl').innerHTML = '<p class="empty">Sem dados de vídeo.</p>'; return; }
+
+    var maxSec = Math.max.apply(null, Object.values(maxBySess));
+    var step = Math.max(1, Math.floor(maxSec / 60));
+    var labels = [], data = [];
+    for (var s = 0; s <= maxSec; s += step) {
+      labels.push(s + 's');
+      data.push(Math.round(Object.values(maxBySess).filter(function(m){return m>=s;}).length / totalWatchers * 100));
+    }
+
+    setLoad('vl', false);
+    var canvas = document.getElementById('vchart'); canvas.style.display = 'block';
+    if (vChart) vChart.destroy();
+    vChart = new Chart(canvas, {
+      type: 'line',
+      data: { labels: labels, datasets: [{ label: '% assistindo', data: data, borderColor: '#f0a500', backgroundColor: 'rgba(240,165,0,0.07)', borderWidth: 2.5, pointRadius: 0, fill: true, tension: 0.3 }]},
+      options: { responsive: true, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return c.parsed.y + '% dos espectadores'; } } } }, scales: { x: { ticks: { color: '#6b7280', maxTicksLimit: 14 }, grid: { color: '#252830' } }, y: { min: 0, max: 100, ticks: { color: '#6b7280', callback: function(v){return v+'%';} }, grid: { color: '#252830' } } } }
+    });
+
+    // Marcos
+    var milestones = [10, 25, 50, 75, 90];
+    var mColors = { 10: '#3b82f6', 25: '#25D366', 50: '#84cc16', 75: '#f0a500', 90: '#ef4444' };
+    var cardsHtml = milestones.map(function(m) {
+      var nearestIdx = Math.min(Math.floor((m/100) * labels.length), labels.length-1);
+      var val = data[nearestIdx] || 0;
+      return '<div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center">'
+        + '<div style="font-size:11px;color:' + mColors[m] + ';font-weight:800;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px">' + m + '% do vídeo</div>'
+        + '<div style="font-size:22px;font-weight:800;font-family:\'JetBrains Mono\',monospace;color:' + mColors[m] + '">' + val + '%</div>'
+        + '<div style="font-size:11px;color:var(--muted);margin-top:3px">ainda assistindo</div></div>';
+    });
+    document.getElementById('milestone-cards').innerHTML = cardsHtml.join('');
+    document.getElementById('video-milestones').style.display = 'block';
+
+  }).catch(function(e) { document.getElementById('vl').innerHTML = '<p class="err">'+e.message+'</p>'; });
+}
+
+// ── UTM / CAMPANHAS ───────────────────────────────────────
+function loadUTMTable() {
+  setLoad('utm-load', true); document.getElementById('utm-table-wrap').style.display = 'none';
+
+  Promise.all([
+    api('sessions?select=session_id,utm_source,utm_medium,utm_campaign'),
+    api('click_events?select=session_id,element_text,element_tag')
+  ]).then(function(results) {
+    var sessions = results[0];
+    var clicks   = results[1];
+
+    // Agrupar sessões por campanha
+    var campaigns = {};
+    sessions.forEach(function(s) {
+      var key = s.utm_campaign || '(orgânico / direto)';
+      if (!campaigns[key]) campaigns[key] = { source: s.utm_source || '—', medium: s.utm_medium || '—', sessions: new Set(), cta: 0 };
+      campaigns[key].sessions.add(s.session_id);
+    });
+
+    // Mapear cliques CTA por sessão
+    var ctaBySess = {};
+    clicks.filter(isCTA).forEach(function(c) { ctaBySess[c.session_id] = true; });
+
+    sessions.forEach(function(s) {
+      var key = s.utm_campaign || '(orgânico / direto)';
+      if (ctaBySess[s.session_id]) campaigns[key].cta++;
+    });
+
+    var rows = Object.entries(campaigns)
+      .sort(function(a,b) { return b[1].sessions.size - a[1].sessions.size; });
+
+    setLoad('utm-load', false);
+    document.getElementById('utm-table-wrap').style.display = 'block';
+    document.getElementById('utm-tbody').innerHTML = rows.map(function(e) {
+      var k = e[0]; var d = e[1];
+      var sess = d.sessions.size;
+      var conv = sess ? Math.round(d.cta / sess * 100) + '%' : '—';
+      var isOrganic = k === '(orgânico / direto)';
       return '<tr>'
-        + '<td style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + esc(txt) + '">' + esc(txt) + '</td>'
-        + '<td><code style="color:var(--muted);font-size:11px">' + esc(tag) + '</code></td>'
-        + '<td><span class="pill ' + (isCta ? 'g' : 'y') + '">' + e[1] + '</span></td>'
+        + '<td><strong style="color:' + (isOrganic ? 'var(--muted)' : 'var(--accent)') + '">' + esc(k) + '</strong></td>'
+        + '<td>' + esc(d.source) + '</td>'
+        + '<td>' + esc(d.medium) + '</td>'
+        + '<td><span class="pill ' + (isOrganic ? 'y' : 'g') + '">' + sess + '</span></td>'
+        + '<td>' + d.cta + '</td>'
+        + '<td style="font-family:\'JetBrains Mono\',monospace;font-weight:700">' + conv + '</td>'
         + '</tr>';
     }).join('');
-  }).catch(function(e) { document.getElementById('cl').innerHTML = '<p class="err">Erro: ' + e.message + '</p>'; });
+
+  }).catch(function(e) { document.getElementById('utm-load').innerHTML = '<p class="err">'+e.message+'</p>'; });
 }
 
+// ── UTM PARAM ─────────────────────────────────────────────
+function copyUTM() {
+  var param = '?utm_source=facebook&utm_medium=cpc&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}';
+  navigator.clipboard.writeText(param).then(showCopyOk);
+}
+function copyFullURL() {
+  var full = SUPA_URL.includes('supabase') ? 'https://seudominio.com/?utm_source=facebook&utm_medium=cpc&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}' : window.location.origin + '/?utm_source=facebook&utm_medium=cpc&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}';
+  navigator.clipboard.writeText(full).then(showCopyOk);
+}
+function showCopyOk() { var el = document.getElementById('copy-ok'); el.style.display = 'block'; setTimeout(function(){ el.style.display = 'none'; }, 2500); }
+
 // ── UTILS ─────────────────────────────────────────────────
-function setLoad(id, show) {
-  document.getElementById(id).style.display = show ? 'block' : 'none';
-}
-function esc(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+function setLoad(id, show) { var el = document.getElementById(id); if (el) el.style.display = show ? 'block' : 'none'; }
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 </script>
 </body>
 </html>
