@@ -1,582 +1,1131 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br" class="scroll-smooth">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel Analytics — Restauração de Fotos</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg:     #0d0f14;
-    --card:   #161920;
-    --border: #252830;
-    --accent: #f0a500;
-    --green:  #25D366;
-    --text:   #e8eaf0;
-    --muted:  #6b7280;
-    --danger: #ef4444;
-    --blue:   #3b82f6;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Sora', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plumare | Catálogo Digital</title>
 
-  /* ── LOGIN ── */
-  #login-screen {
-    min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;
-  }
-  .login-box {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 20px; padding: 40px 36px; width: 100%; max-width: 400px;
-    box-shadow: 0 24px 60px rgba(0,0,0,0.5);
-  }
-  .login-logo { font-size: 36px; margin-bottom: 14px; }
-  .login-box h2 { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
-  .login-box p  { color: var(--muted); font-size: 14px; margin-bottom: 30px; }
-  .field { margin-bottom: 16px; }
-  .field label { display: block; font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 7px; text-transform: uppercase; letter-spacing: .8px; }
-  .field input {
-    width: 100%; background: var(--bg); border: 1px solid var(--border);
-    color: var(--text); font-family: 'Sora', sans-serif; font-size: 14px;
-    padding: 13px 14px; border-radius: 10px; outline: none; transition: border-color .2s;
-  }
-  .field input:focus { border-color: var(--accent); }
-  .btn-enter {
-    width: 100%; background: var(--accent); color: #000;
-    font-family: 'Sora', sans-serif; font-weight: 800; font-size: 15px;
-    padding: 14px; border: none; border-radius: 10px; cursor: pointer;
-    margin-top: 8px; transition: opacity .2s, transform .1s;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-  }
-  .btn-enter:hover { opacity: .9; }
-  .btn-enter:active { transform: scale(.98); }
-  .btn-enter:disabled { opacity: .5; cursor: not-allowed; }
-  #login-err {
-    background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3);
-    color: var(--danger); font-size: 13px; padding: 10px 14px;
-    border-radius: 8px; margin-top: 14px; display: none; text-align: center;
-  }
+    <!-- Open Graph (WhatsApp / redes sociais) -->
+    <meta property="og:title" content="Plumare Textil | Catálogo Digital">
+    <meta property="og:description" content="Conheça nosso catálogo completo de enxovais e produtos têxteis. Qualidade direta da fábrica em Tobias Barreto - SE.">
+    <meta property="og:image" content="https://hfqcnejztaczhxattlsx.supabase.co/storage/v1/object/sign/Arquivos%20site/logo.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9iYmU5YzEyYy0yYzBiLTQwMDItOTA0Mi0xMzU1YWNkMWQ1ZTMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJBcnF1aXZvcyBzaXRlL2xvZ28ucG5nIiwiaWF0IjoxNzcwMDM1MzIzLCJleHAiOjE4MDE1NzEzMjN9.sOgLySmkvZ99jL1ZYZ4vkldr7fn_DvvaXDGtWm-phak">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Plumare Textil">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Plumare Textil | Catálogo Digital">
+    <meta name="twitter:description" content="Catálogo completo de enxovais e produtos têxteis.">
+    <meta name="twitter:image" content="https://hfqcnejztaczhxattlsx.supabase.co/storage/v1/object/sign/Arquivos%20site/logo.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9iYmU5YzEyYy0yYzBiLTQwMDItOTA0Mi0xMzU1YWNkMWQ1ZTMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJBcnF1aXZvcyBzaXRlL2xvZ28ucG5nIiwiaWF0IjoxNzcwMDM1MzIzLCJleHAiOjE4MDE1NzEzMjN9.sOgLySmkvZ99jL1ZYZ4vkldr7fn_DvvaXDGtWm-phak">
 
-  /* ── PAINEL ── */
-  #dashboard { display: none; padding: 24px 20px; max-width: 1200px; margin: 0 auto; }
-  .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
-  .top-bar h1 { font-size: 20px; font-weight: 800; }
-  .top-bar h1 span { color: var(--accent); }
-  .user-info { font-size: 12px; color: var(--muted); }
-  .btn-sm { background: var(--card); border: 1px solid var(--border); color: var(--text); font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: border-color .2s, color .2s; }
-  .btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+    <!-- Fonte Comfortaa -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons (Ícones) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
-  /* Abas */
-  .tabs { display: flex; gap: 6px; margin-bottom: 24px; flex-wrap: wrap; }
-  .tab { padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; border: 1px solid var(--border); color: var(--muted); background: var(--card); transition: all .2s; }
-  .tab.active { background: var(--accent); color: #000; border-color: var(--accent); }
-  .tab-section { display: none; }
-  .tab-section.active { display: block; }
+    <!-- React e ReactDOM (production = muito mais rápido) -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 
-  /* KPIs */
-  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr)); gap: 14px; margin-bottom: 24px; }
-  .kpi-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px; }
-  .kpi-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 8px; }
-  .kpi-value { font-size: 26px; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
-  .kpi-value.g { color: var(--green); }
-  .kpi-value.y { color: var(--accent); }
-  .kpi-value.b { color: var(--blue); }
-  .kpi-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-  /* Chart cards */
-  .chart-grid { display: grid; grid-template-columns: 1fr; gap: 18px; }
-  @media (min-width: 800px) { .chart-grid { grid-template-columns: 1fr 1fr; } }
-  .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
-  .chart-card.full { grid-column: 1 / -1; }
-  .chart-title { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
-  .chart-sub   { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+    <!-- reCAPTCHA v2 -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
-  /* Heatmap */
-  .heatmap-controls { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
-  .heatmap-controls select { background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: 'Sora', sans-serif; font-size: 13px; padding: 6px 10px; border-radius: 7px; outline: none; }
-  .site-heatmap-wrap { position: relative; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); background: #1a1d24; }
-  .site-heatmap-wrap iframe { display: block; width: 100%; border: none; pointer-events: none; }
-  #heat-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+    <!-- Configurações do Tema e Animações -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class', 
+            theme: {
+                extend: {
+                    colors: {
+                        plumare: {
+                            blue: '#5EB2F0',
+                            'blue-light': '#ACDCFF',
+                            'blue-dark': '#4A90C0',
+                            teal: '#6EEBCC',
+                            'teal-light': '#BAFFEE',
+                            black: '#000000',
+                            dark1: '#151515', 
+                            dark2: '#2A2A2A', 
+                            dark3: '#3E3E3E',
+                            softwhite: '#F0F4F8', 
+                            paper: '#FFFFFF',
+                        },
+                        shopee: '#EE4D2D',
+                        whatsapp: '#25D366',
+                        instagram: '#C13584'
+                    },
+                    fontFamily: {
+                        sans: ['Comfortaa', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 8s ease-in-out infinite',
+                        'fade-in-up': 'fadeInUp 0.8s ease-out',
+                        'spin-slow': 'spin 3s linear infinite',
+                        'bounce-short': 'bounce 1s infinite',
+                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both', 
+                        'pop-in': 'popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards', 
+                        'success-scale': 'successScale 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-15px)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        shake: {
+                            '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+                            '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+                            '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
+                        },
+                        popIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.8)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' }
+                        },
+                        successScale: {
+                            '0%': { transform: 'scale(1)' },
+                            '50%': { transform: 'scale(1.05)' },
+                            '100%': { transform: 'scale(1)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 
-  /* Dobra */
-  .fold-map { position: relative; border-radius: 10px; overflow: hidden; background: #1a1d24; height: 320px; }
-  .fold-bar { position: absolute; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 14px; font-size: 12px; font-weight: 700; height: 28px; border-top: 1px dashed; }
-  .fold-label { position: relative; z-index: 2; color: rgba(255,255,255,0.9); }
-  .fold-pct   { position: relative; z-index: 2; font-family: 'JetBrains Mono', monospace; }
+    <style>
+        body {
+            font-family: 'Comfortaa', sans-serif;
+            background-color: #F0F4F8; 
+            color: #151515;
+            transition: background-color 0.5s ease, color 0.5s ease;
+            -webkit-font-smoothing: antialiased;
+            /* TEXTURA DE FUNDO */
+            background-image: radial-gradient(#CFD8DC 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
 
-  /* UTM */
-  .utm-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .utm-table th { text-align: left; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
-  .utm-table td { padding: 10px 8px 10px 0; border-bottom: 1px solid var(--border); }
-  .utm-table tr:last-child td { border: none; }
-  .utm-param-box { background: #1a1d24; border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--green); word-break: break-all; line-height: 1.8; margin-top: 4px; }
-  .copy-btn { background: var(--accent); color: #000; font-family: 'Sora', sans-serif; font-weight: 700; font-size: 12px; padding: 6px 14px; border: none; border-radius: 7px; cursor: pointer; margin-top: 10px; }
+        .dark body {
+            background-color: #151515;
+            color: #F0F4F8;
+            background-image: none; 
+        }
 
-  /* Tabela */
-  .t { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .t th { text-align: left; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
-  .t td { padding: 10px 0; border-bottom: 1px solid var(--border); }
-  .t tr:last-child td { border: none; }
+        /* Painel de Vidro */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.90);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 1);
+            box-shadow: 0 10px 40px -10px rgba(94, 178, 240, 0.15); 
+            transition: all 0.3s ease;
+        }
 
-  .pill { display: inline-block; font-weight: 700; font-size: 11px; padding: 2px 9px; border-radius: 20px; }
-  .pill.g { background: var(--green); color: #000; }
-  .pill.y { background: var(--accent); color: #000; }
-  .pill.b { background: var(--blue);   color: #fff; }
+        .dark .glass-panel {
+            background: rgba(42, 42, 42, 0.85); 
+            border: 1px solid rgba(94, 178, 240, 0.1); 
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
+        }
 
-  /* Utils */
-  .spin-wrap { text-align: center; padding: 36px; color: var(--muted); font-size: 13px; }
-  .spinner { width: 26px; height: 26px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 10px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .err   { color: var(--danger); font-size: 13px; padding: 16px 0; }
-  .empty { color: var(--muted); font-size: 13px; padding: 16px 0; text-align: center; }
-  .global-err { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3); border-radius: 10px; padding: 12px 16px; font-size: 13px; color: var(--danger); margin-bottom: 18px; }
-</style>
+        .nav-slim { height: 70px; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </head>
-<body>
+<body class="selection:bg-plumare-blue/30 selection:text-plumare-black">
 
-<!-- ── LOGIN ── -->
-<div id="login-screen">
-  <div class="login-box">
-    <div class="login-logo">📸</div>
-    <h2>Painel Analytics</h2>
-    <p>Restauração de Fotos — acesso restrito</p>
-
-    <div class="field">
-      <label>E-mail</label>
-      <input id="inp-email" type="email" placeholder="seu@email.com" autocomplete="email">
-    </div>
-    <div class="field">
-      <label>Senha</label>
-      <input id="inp-pass" type="password" placeholder="••••••••" autocomplete="current-password">
+    <!-- Background Decorativo -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-plumare-blue/10 dark:bg-plumare-blue/5 rounded-full filter blur-[120px] translate-x-1/3 -translate-y-1/3"></div>
+        <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-plumare-teal/10 dark:bg-plumare-teal/5 rounded-full filter blur-[100px] -translate-x-1/3 translate-y-1/3"></div>
     </div>
 
-    <button class="btn-enter" id="btn-login" onclick="login()">
-      <span id="btn-txt">Entrar →</span>
-    </button>
-    <div id="login-err"></div>
-  </div>
-</div>
+    <!-- HEADER SLIM -->
+    <header id="main-header" class="fixed top-0 w-full z-40 glass-panel nav-slim transition-all duration-300">
+        <div class="max-w-6xl mx-auto px-4 h-full flex items-center justify-between">
+            <!-- Logo Area -->
+            <div class="flex items-center gap-3 cursor-pointer group" onclick="window.goHome()">
+                <div class="w-10 h-10 rounded-xl bg-plumare-blue flex items-center justify-center text-white shadow-lg shadow-plumare-blue/30 group-hover:scale-105 transition-transform">
+                     <img id="logo-preview" src="https://hfqcnejztaczhxattlsx.supabase.co/storage/v1/object/sign/Arquivos%20site/logo.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9iYmU5YzEyYy0yYzBiLTQwMDItOTA0Mi0xMzU1YWNkMWQ1ZTMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJBcnF1aXZvcyBzaXRlL2xvZ28ucG5nIiwiaWF0IjoxNzcwMDM1MzIzLCJleHAiOjE4MDE1NzEzMjN9.sOgLySmkvZ99jL1ZYZ4vkldr7fn_DvvaXDGtWm-phak" alt="P" class="w-full h-full object-cover rounded-xl bg-white">
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-xl font-bold tracking-tight text-plumare-blue">PLUMARE</span>
+                    <span class="text-[0.6rem] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.3em]">Textil</span>
+                </div>
+            </div>
 
-<!-- ── PAINEL ── -->
-<div id="dashboard">
-  <div class="top-bar">
-    <h1>Painel <span>Analytics</span></h1>
-    <div style="display:flex;gap:8px;align-items:center">
-      <span class="user-info" id="user-email-display"></span>
-      <button class="btn-sm" onclick="loadAll()">↻ Atualizar</button>
-      <button class="btn-sm" onclick="doLogout()">Sair</button>
-    </div>
-  </div>
-
-  <div id="gerr"></div>
-
-  <!-- ABAS -->
-  <div class="tabs">
-    <div class="tab active" onclick="showTab('resumo', this)">📈 Resumo</div>
-    <div class="tab" onclick="showTab('heatmap', this)">🔥 Mapa de Calor</div>
-    <div class="tab" onclick="showTab('scroll', this)">📜 Dobra</div>
-    <div class="tab" onclick="showTab('video', this)">🎬 Vídeo</div>
-    <div class="tab" onclick="showTab('campanha', this)">📣 Campanhas</div>
-  </div>
-
-  <!-- ═══ RESUMO ═══ -->
-  <div id="tab-resumo" class="tab-section active">
-    <div class="kpi-grid">
-      <div class="kpi-card"><div class="kpi-label">Sessões</div><div class="kpi-value y" id="k-sess">—</div><div class="kpi-sub">visitas únicas</div></div>
-      <div class="kpi-card"><div class="kpi-label">Tempo médio</div><div class="kpi-value g" id="k-time">—</div><div class="kpi-sub">segundos na página</div></div>
-      <div class="kpi-card"><div class="kpi-label">Viram vídeo 5s+</div><div class="kpi-value y" id="k-vpct">—</div><div class="kpi-sub">% das visitas</div></div>
-      <div class="kpi-card"><div class="kpi-label">Cliques WhatsApp</div><div class="kpi-value g" id="k-cta">—</div><div class="kpi-sub">toques no botão</div></div>
-      <div class="kpi-card"><div class="kpi-label">Taxa conversão</div><div class="kpi-value y" id="k-conv">—</div><div class="kpi-sub">CTA / sessões</div></div>
-      <div class="kpi-card"><div class="kpi-label">Via campanha</div><div class="kpi-value b" id="k-utm">—</div><div class="kpi-sub">sessões com UTM</div></div>
-    </div>
-    <div class="chart-grid">
-      <div class="chart-card">
-        <div class="chart-title">⏱ Tempo na página</div>
-        <div class="chart-sub">Distribuição por faixa</div>
-        <div id="tl" class="spin-wrap"><div class="spinner"></div></div>
-        <canvas id="tchart" style="display:none"></canvas>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title">🎯 Botões mais clicados</div>
-        <div class="chart-sub">Top 8 elementos</div>
-        <div id="cl" class="spin-wrap"><div class="spinner"></div></div>
-        <div id="ctable" style="display:none">
-          <table class="t">
-            <thead><tr><th>Texto</th><th>Tag</th><th>#</th></tr></thead>
-            <tbody id="ctbody"></tbody>
-          </table>
+            <!-- Theme Toggle -->
+            <div class="flex items-center gap-3">
+                <button onclick="toggleTheme()" class="w-10 h-10 rounded-full flex items-center justify-center bg-plumare-softwhite dark:bg-plumare-dark2 hover:bg-gray-200 dark:hover:bg-plumare-dark3 transition-colors text-plumare-blue">
+                    <i data-lucide="moon" class="w-5 h-5 block dark:hidden fill-current"></i>
+                    <i data-lucide="sun" class="w-5 h-5 hidden dark:block fill-current"></i>
+                </button>
+            </div>
         </div>
-      </div>
-    </div>
-  </div>
+    </header>
 
-  <!-- ═══ HEATMAP ═══ -->
-  <div id="tab-heatmap" class="tab-section">
-    <div class="chart-card full" style="margin-bottom:0">
-      <div class="chart-title">🔥 Mapa de calor sobreposto ao site</div>
-      <div class="chart-sub">Pontos quentes = onde as pessoas mais clicam/tocam</div>
-      <div class="heatmap-controls">
-        <span style="font-size:13px;color:var(--muted)">Intensidade:</span>
-        <select id="heat-radius" onchange="renderHeatmap()">
-          <option value="30">Suave</option>
-          <option value="22" selected>Normal</option>
-          <option value="14">Preciso</option>
-        </select>
-      </div>
-      <div id="hl" class="spin-wrap"><div class="spinner"></div>Carregando cliques...</div>
-      <div class="site-heatmap-wrap" id="heat-site-wrap" style="display:none">
-        <iframe id="site-iframe" src="index.html" scrolling="no"></iframe>
-        <canvas id="heat-overlay"></canvas>
-      </div>
-      <p style="font-size:12px;color:var(--muted);margin-top:10px">💡 O mapa exibe o site real. Caso estejam em domínios diferentes, os cliques ainda aparecem no canvas sobreposto.</p>
-    </div>
-  </div>
+    <div id="spacer-header" class="pt-28"></div>
 
-  <!-- ═══ DOBRA ═══ -->
-  <div id="tab-scroll" class="tab-section">
-    <div class="chart-card full">
-      <div class="chart-title">📜 Mapa de dobra da página</div>
-      <div class="chart-sub">% do total de usuários que chegou a cada ponto</div>
-      <div id="sl" class="spin-wrap"><div class="spinner"></div></div>
-      <div id="fold-container" style="display:none">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start">
-          <div><div style="font-size:12px;color:var(--muted);margin-bottom:14px;font-weight:700;text-transform:uppercase;letter-spacing:.8px">Usuários que chegaram até aqui</div><div id="fold-bars"></div></div>
-          <div><div style="font-size:12px;color:var(--muted);margin-bottom:14px;font-weight:700;text-transform:uppercase;letter-spacing:.8px">Visualização da página</div><div class="fold-map" id="fold-map"></div></div>
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="relative z-10 pb-12 px-4">
+        <div class="max-w-4xl mx-auto">
+            
+            <!-- VIEW: INSTITUCIONAL (HOME) -->
+            <div id="home-view" class="space-y-12 transition-all duration-500">
+                
+                <!-- BOTÕES REACT -->
+                <div id="react-buttons-root"></div>
+
+                <!-- SEÇÃO DE VÍDEO -->
+                <section class="glass-panel p-6 rounded-[2rem]">
+                    <div class="text-center mb-6">
+                        <h2 class="text-2xl font-bold text-plumare-blue mb-1">Quem Somos</h2>
+                        <p class="text-gray-500 dark:text-gray-400 font-light text-sm">Do fio ao conforto do seu lar</p>
+                    </div>
+
+                    <div class="relative w-full max-w-md mx-auto">
+                        <div class="relative rounded-2xl overflow-hidden bg-plumare-black shadow-2xl shadow-plumare-blue/20">
+                            <video id="plumare-video" class="w-full aspect-[9/16] object-cover opacity-90" preload="none" poster="https://hfqcnejztaczhxattlsx.supabase.co/storage/v1/object/sign/Arquivos%20site/casal.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9iYmU5YzEyYy0yYzBiLTQwMDItOTA0Mi0xMzU1YWNkMWQ1ZTMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJBcnF1aXZvcyBzaXRlL2Nhc2FsLmpwZyIsImlhdCI6MTc3MDAzNTM2OSwiZXhwIjoxODAxNTcxMzY5fQ.xYqFSU_rGusNXYM0HMb2u7YizILGoj9eNXjmjsOMOsQ">
+                                <source src="https://hfqcnejztaczhxattlsx.supabase.co/storage/v1/object/sign/Arquivos%20site/video%20institucional%20.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9iYmU5YzEyYy0yYzBiLTQwMDItOTA0Mi0xMzU1YWNkMWQ1ZTMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJBcnF1aXZvcyBzaXRlL3ZpZGVvIGluc3RpdHVjaW9uYWwgLm1wNCIsImlhdCI6MTc3MDA0MzUyMiwiZXhwIjoxODAxNTc5NTIyfQ.OTf7lzj7_gJRZhQQ0Z2hq7IxXcYaKF3XmpAu6k9nVK4" type="video/mp4">
+                            </video>
+                            <div id="video-controls" class="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px] transition-opacity duration-300 opacity-0 hover:opacity-100 cursor-pointer">
+                                <button id="play-pause-btn" class="w-20 h-20 rounded-full bg-plumare-blue/90 text-white flex items-center justify-center hover:scale-110 transition-transform shadow-2xl">
+                                    <i id="play-icon" data-lucide="play" class="w-8 h-8 fill-current ml-1"></i>
+                                    <i id="pause-icon" data-lucide="pause" class="w-8 h-8 fill-current hidden"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SEÇÃO 2: HISTÓRIA -->
+                <section id="historia" class="glass-panel p-8 md:p-10 rounded-[2rem]">
+                    <div class="flex flex-col md:flex-row gap-8 items-center">
+                        <div class="flex-1 space-y-4 text-center md:text-left">
+                            <h2 class="text-3xl font-bold text-plumare-blue">Nossa História</h2>
+                            <p class="text-gray-600 dark:text-gray-300 leading-relaxed font-light">
+                                Nascemos da paixão por transformar fios em conforto. Em nossa fábrica em <strong class="text-plumare-teal font-bold">Tobias Barreto</strong>, unimos tecnologia e acabamento artesanal para criar o enxoval perfeito para o seu lar.
+                            </p>
+                        </div>
+                        <div class="flex-1 w-full relative">
+                            <div class="relative h-64 w-full rounded-2xl overflow-hidden shadow-lg border-4 border-white dark:border-plumare-dark2">
+                                <img src="https://hfqcnejztaczhxattlsx.supabase.co/storage/v1/object/sign/Arquivos%20site/casal.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9iYmU5YzEyYy0yYzBiLTQwMDItOTA0Mi0xMzU1YWNkMWQ1ZTMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJBcnF1aXZvcyBzaXRlL2Nhc2FsLmpwZyIsImlhdCI6MTc3MDAzNTM2OSwiZXhwIjoxODAxNTcxMzY5fQ.xYqFSU_rGusNXYM0HMb2u7YizILGoj9eNXjmjsOMOsQ" class="slider-img absolute w-full h-full object-cover transition-opacity duration-1000 opacity-100" alt="Fábrica">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SEÇÃO 3: TIME -->
+                <section class="space-y-6">
+                    <div class="text-center space-y-1">
+                        <h2 class="text-xl font-bold text-plumare-dark1 dark:text-white">Nosso Time</h2>
+                        <p class="text-gray-500 dark:text-gray-400 text-xs">Pessoas reais fazendo a diferença.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div class="glass-panel p-1.5 rounded-2xl hover:scale-[1.02] transition-transform">
+                            <div class="h-40 rounded-xl overflow-hidden relative">
+                                <img src="https://hfqcnejztaczhxattlsx.supabase.co/storage/v1/object/sign/Arquivos%20site/bordado.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9iYmU5YzEyYy0yYzBiLTQwMDItOTA0Mi0xMzU1YWNkMWQ1ZTMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJBcnF1aXZvcyBzaXRlL2JvcmRhZG8uanBnIiwiaWF0IjoxNzcwMDM1NTExLCJleHAiOjE4MDE1NzE1MTF9.aybGk-kpEr5ySBeEsaPRcBqS5ChFqlenJ7wsl0UR4t4" alt="Produção" class="w-full h-full object-cover" loading="lazy">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end justify-center p-2">
+                                    <span class="text-white text-[10px] font-bold uppercase tracking-widest">Produção</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="glass-panel p-1.5 rounded-2xl hover:scale-[1.02] transition-transform">
+                            <div class="h-40 rounded-xl overflow-hidden relative">
+                                <img src="https://hfqcnejztaczhxattlsx.supabase.co/storage/v1/object/sign/Arquivos%20site/20914B37-8199-4B03-A071-9F71222D339A.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9iYmU5YzEyYy0yYzBiLTQwMDItOTA0Mi0xMzU1YWNkMWQ1ZTMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJBcnF1aXZvcyBzaXRlLzIwOTE0QjM3LTgxOTktNEIwMy1BMDcxLTlGNzEyMjJEMzM5QS5qcGciLCJpYXQiOjE3NzAwMzYzMjIsImV4cCI6MTgwMTU3MjMyMn0._QaVXH_LEJ5AFROfIKkwqSu-uZVE_oc4ND6qsYCM7WE" alt="Organização" class="w-full h-full object-cover" loading="lazy">
+                            </div>
+                        </div>
+                        <div class="glass-panel p-1.5 rounded-2xl hover:scale-[1.02] transition-transform">
+                            <div class="h-40 rounded-xl overflow-hidden relative">
+                                <img src="https://hfqcnejztaczhxattlsx.supabase.co/storage/v1/object/sign/Arquivos%20site/CB8A9201-3B94-45A4-87BB-47D1EFB76B64.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9iYmU5YzEyYy0yYzBiLTQwMDItOTA0Mi0xMzU1YWNkMWQ1ZTMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJBcnF1aXZvcyBzaXRlL0NCOEE5MjAxLTNCOTQtNDVBNC04N0JCLTQ3RDFFRkI3NkI2NC5qcGciLCJpYXQiOjE3NzAwMzYyNTQsImV4cCI6MTgwMTU3MjI1NH0.IpYFD8Gc03WYHxu-Kuq_mUZGGVV0PNCj9_Gdif6QJK8" alt="Qualidade" class="w-full h-full object-cover" loading="lazy">
+                            </div>
+                        </div>
+                        <div class="glass-panel p-1.5 rounded-2xl hover:scale-[1.02] transition-transform">
+                            <div class="h-40 rounded-xl overflow-hidden relative">
+                                <img src="https://hfqcnejztaczhxattlsx.supabase.co/storage/v1/object/sign/Arquivos%20site/estoque.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV9iYmU5YzEyYy0yYzBiLTQwMDItOTA0Mi0xMzU1YWNkMWQ1ZTMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJBcnF1aXZvcyBzaXRlL2VzdG9xdWUuanBnIiwiaWF0IjoxNzcwMDM1NDc0LCJleHAiOjE4MDE1NzE0NzR9.NT8_fmDyjRhu2x26My9IJtu2-td7NSIUIso0u_4T6D8" alt="Logística" class="w-full h-full object-cover" loading="lazy">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SEÇÃO 6: LOCALIZAÇÃO -->
+                <section class="glass-panel p-6 rounded-[2rem]">
+                    <div class="flex flex-col md:flex-row gap-6 items-center">
+                        <div class="p-2 md:w-1/3 text-center md:text-left space-y-2">
+                            <div class="inline-block p-2 bg-plumare-blue/10 rounded-full text-plumare-blue mb-2">
+                                <i data-lucide="map-pin" class="w-6 h-6"></i>
+                            </div>
+                            <h3 class="font-bold text-xl text-plumare-dark1 dark:text-white">Nossa Fábrica</h3>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm font-light">
+                                Rua K Dist. Industrial, 4<br>Tobias Barreto - SE
+                            </p>
+                            <a href="https://maps.app.goo.gl/PMV8atpNPRhSvJaE7" target="_blank" class="inline-block mt-2 text-plumare-blue font-bold text-sm hover:text-plumare-teal transition-colors">Abrir no Mapa &rarr;</a>
+                        </div>
+                        <div class="w-full md:w-2/3 h-48 rounded-2xl overflow-hidden border border-gray-200 dark:border-plumare-dark3">
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3914.1716514317063!2d-37.982813199999995!3d-11.174923399999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x711b2ce7a1be4f9%3A0x289e3e4d5a74588c!2sCentro%20Industrial%20Integrado%20Governador%20Marcelo%20Deda!5e0!3m2!1spt-BR!2sbr!4v1770316332055!5m2!1spt-BR!2sbr" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- VIEW: CATÁLOGO (HIDDEN BY DEFAULT) -->
+            <div id="catalog-view" class="hidden min-h-screen animate-fade-in-up">
+                <div id="react-catalog-root"></div>
+            </div>
+
+            <!-- SEÇÃO INSTAGRAM -->
+            <section class="rounded-[2rem] overflow-hidden shadow-xl border border-plumare-blue/20 bg-gradient-to-br from-white to-plumare-blue/5 dark:from-plumare-dark2 dark:to-plumare-dark1 mt-16 relative">
+                <div class="absolute top-0 w-full h-1 bg-gradient-to-r from-plumare-blue to-purple-500"></div>
+                <div class="p-10 flex flex-col items-center text-center space-y-6">
+                    <div class="w-20 h-20 rounded-full p-[2px] bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600">
+                        <div class="w-full h-full bg-white dark:bg-plumare-dark1 rounded-full flex items-center justify-center">
+                            <i data-lucide="instagram" class="w-10 h-10 text-plumare-dark1 dark:text-white"></i>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <h2 class="text-2xl font-bold text-plumare-dark1 dark:text-white">@plumaretextil</h2>
+                        <p class="text-gray-500 dark:text-gray-400 text-sm">Acompanhe nossos bastidores</p>
+                    </div>
+                    <a href="https://www.instagram.com/plumaretextil/" target="_blank" class="px-8 py-3 rounded-xl bg-plumare-dark1 dark:bg-white text-white dark:text-plumare-black font-bold shadow-lg hover:scale-105 transition-all text-sm">
+                        Seguir no Instagram
+                    </a>
+                </div>
+            </section>
+
         </div>
-        <div style="margin-top:24px">
-          <table class="t">
-            <thead><tr><th>Profundidade</th><th>Sessões</th><th>%</th><th>Seção</th></tr></thead>
-            <tbody id="fold-table-body"></tbody>
-          </table>
+    </main>
+
+    <!-- NOTIFICAÇÃO LGPD -->
+    <div id="lgpd-banner" class="fixed bottom-4 left-4 right-4 z-50">
+        <div class="glass-panel p-4 rounded-2xl max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 shadow-2xl">
+            <div class="flex items-start gap-3">
+                <i data-lucide="shield-check" class="text-plumare-blue w-6 h-6 shrink-0 mt-1"></i>
+                <p class="text-xs text-gray-600 dark:text-gray-300">Utilizamos cookies para melhorar sua experiência (LGPD).</p>
+            </div>
+            <button onclick="document.getElementById('lgpd-banner').style.display='none'" class="px-6 py-2 bg-plumare-blue text-white text-xs font-bold rounded-xl hover:bg-plumare-blue-dark transition-colors">Aceitar</button>
         </div>
-      </div>
     </div>
-  </div>
 
-  <!-- ═══ VÍDEO ═══ -->
-  <div id="tab-video" class="tab-section">
-    <div class="chart-card full">
-      <div class="chart-title">📉 Curva de abandono do vídeo</div>
-      <div class="chart-sub">% de pessoas ainda assistindo em cada segundo</div>
-      <div id="vl" class="spin-wrap"><div class="spinner"></div></div>
-      <canvas id="vchart" style="display:none"></canvas>
-      <div id="video-milestones" style="display:none;margin-top:20px">
-        <div style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">Marcos de retenção</div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px" id="milestone-cards"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══ CAMPANHAS ═══ -->
-  <div id="tab-campanha" class="tab-section">
-    <div class="chart-grid">
-      <div class="chart-card full">
-        <div class="chart-title">📣 Desempenho por campanha</div>
-        <div class="chart-sub">Sessões agrupadas por utm_campaign</div>
-        <div id="utm-load" class="spin-wrap"><div class="spinner"></div></div>
-        <div id="utm-table-wrap" style="display:none">
-          <table class="utm-table">
-            <thead><tr><th>Campanha</th><th>Fonte</th><th>Mídia</th><th>Sessões</th><th>Cliques CTA</th><th>Conversão</th></tr></thead>
-            <tbody id="utm-tbody"></tbody>
-          </table>
+    <!-- Footer Final -->
+    <footer class="mt-12 border-t border-gray-200 dark:border-plumare-dark3 bg-white/50 dark:bg-black/20 backdrop-blur-lg">
+        <div class="max-w-6xl mx-auto px-6 py-10">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="text-center md:text-left space-y-1">
+                    <p class="text-sm font-bold text-plumare-blue tracking-wide uppercase">Plumare Textil</p>
+                    <p class="text-[10px] text-gray-500 uppercase tracking-widest">CNPJ: 42.700.046/0001-63</p>
+                </div>
+                <div class="text-[10px] text-gray-400">
+                    © <script>document.write(new Date().getFullYear())</script> Todos os direitos reservados.
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="chart-card full">
-        <div class="chart-title">🔗 Parâmetro UTM para Meta Ads</div>
-        <div class="chart-sub">Cole no campo "URL do site" da campanha no Meta Ads Manager</div>
-        <div class="utm-param-box">?utm_source=facebook&amp;utm_medium=cpc&amp;utm_campaign={{campaign.name}}&amp;utm_content={{ad.name}}&amp;utm_term={{adset.name}}</div>
-        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-          <button class="copy-btn" onclick="copyUTM()">📋 Copiar parâmetro</button>
-          <button class="copy-btn" style="background:var(--blue);color:#fff" onclick="copyFullURL()">🔗 Copiar URL completa</button>
-        </div>
-        <div id="copy-ok" style="font-size:12px;color:var(--green);margin-top:8px;display:none">✅ Copiado!</div>
-        <div style="margin-top:24px;border-top:1px solid var(--border);padding-top:20px">
-          <div style="font-size:13px;font-weight:700;margin-bottom:12px">Como configurar:</div>
-          <ol style="font-size:13px;color:var(--muted);line-height:2.4;padding-left:18px">
-            <li>Abra o <strong style="color:var(--text)">Meta Ads Manager</strong></li>
-            <li>Edite seu anúncio → campo <strong style="color:var(--text)">"URL do site"</strong></li>
-            <li>Cole seu domínio + o parâmetro acima:<br><code style="background:#1a1d24;padding:2px 6px;border-radius:4px;font-size:11px;color:var(--green)">https://seusite.com/?utm_source=facebook&utm_medium=cpc&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}</code></li>
-            <li>Dados aparecem na aba <strong style="color:var(--accent)">Campanhas</strong> por nome</li>
-          </ol>
-        </div>
-      </div>
-    </div>
-  </div>
+    </footer>
 
-</div><!-- /dashboard -->
+    <!-- LOGICA REACT -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
-<script>
-// ── CONFIG ────────────────────────────────────────────────
-// URL e chave ANON (pública — usada só para autenticação)
-var SUPA_URL  = 'https://raoglzfmdxrynpwjmilp.supabase.co';
-var ANON_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJhb2dsemZtZHhyeW5wd2ptaWxwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4MjAwOTAsImV4cCI6MjA4ODM5NjA5MH0.IZT0LwVmtqC1vPpexF4nm81jnIQjiIWGwBTT4boKBpg';
+<script type="text/babel">
+    const { useState, useEffect, useRef } = React;
 
-var ACCESS_TOKEN = ''; // preenchido após login
-var USER_EMAIL   = '';
-var vChart = null, tChart = null, heatData = [];
+    // --- CONFIGURAÇÃO SUPABASE ---
+    const SUPABASE_URL = 'https://hfqcnejztaczhxattlsx.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhmcWNuZWp6dGFjemh4YXR0bHN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4NzI0MjgsImV4cCI6MjA4NTQ0ODQyOH0.-ODMdiqWezn-jZvDXbbTZsuMNK6KW7A1wuskufh7NKQ';
 
-// ── AUTH ──────────────────────────────────────────────────
-function login() {
-  var email = document.getElementById('inp-email').value.trim();
-  var pass  = document.getElementById('inp-pass').value;
-  if (!email || !pass) { showLoginErr('Preencha e-mail e senha.'); return; }
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  setLoginLoading(true);
+    // ==========================================
+    // UTILS
+    // ==========================================
 
-  fetch(SUPA_URL + '/auth/v1/token?grant_type=password', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'apikey': ANON_KEY },
-    body: JSON.stringify({ email: email, password: pass })
-  })
-  .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
-  .then(function(res) {
-    setLoginLoading(false);
-    if (!res.ok) {
-      var msg = res.data.error_description || res.data.msg || 'Credenciais inválidas.';
-      showLoginErr(msg);
-      return;
-    }
-    ACCESS_TOKEN = res.data.access_token;
-    USER_EMAIL   = res.data.user.email;
+    // Chave do reCAPTCHA v2 — cadastre em https://www.google.com/recaptcha/admin
+    // e substitua pelo valor real. Enquanto for placeholder, o reCAPTCHA fica desativado.
+    const RECAPTCHA_SITE_KEY = '6LcxhYksAAAAACBoivemeJpTgYeZtbBMAsabAUpC';
+    const recaptchaEnabled = RECAPTCHA_SITE_KEY !== 'COLE_SUA_CHAVE_RECAPTCHA_AQUI';
 
-    // Salva sessão no sessionStorage (some quando fecha o navegador)
-    sessionStorage.setItem('an_token', ACCESS_TOKEN);
-    sessionStorage.setItem('an_email', USER_EMAIL);
+    // Extrai a URL limpa (sem anotação #crop:xxx)
+    const getImageUrl = (url) => {
+        if (!url) return '';
+        const baseUrl = url.split('#crop:')[0];
+        if (baseUrl.includes('drive.google.com') || baseUrl.includes('docs.google.com')) {
+            const idMatch = baseUrl.match(/[-\w]{25,}/);
+            if (idMatch) {
+                return `https://lh3.googleusercontent.com/d/${idMatch[0]}`;
+            }
+        }
+        return baseUrl;
+    };
 
-    openDashboard();
-  })
-  .catch(function() { setLoginLoading(false); showLoginErr('Erro de conexão.'); });
-}
+    // Extrai a posição de enquadramento codificada na URL (ex: "foto.jpg#crop:top")
+    const getImagePosition = (url) => {
+        if (!url) return 'center center';
+        const cropPart = url.split('#crop:')[1];
+        if (!cropPart) return 'center center';
+        const map = {
+            'top':    'center top',
+            'bottom': 'center bottom',
+            'left':   'left center',
+            'right':  'right center',
+            'center': 'center center',
+        };
+        return map[cropPart] || 'center center';
+    };
 
-function showLoginErr(msg) {
-  var el = document.getElementById('login-err');
-  el.textContent = '❌ ' + msg;
-  el.style.display = 'block';
-}
-function setLoginLoading(on) {
-  var btn = document.getElementById('btn-login');
-  document.getElementById('btn-txt').textContent = on ? 'Entrando…' : 'Entrar →';
-  btn.disabled = on;
-}
+    // ==========================================
+    // COMPONENTES REACT
+    // ==========================================
 
-function openDashboard() {
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('dashboard').style.display    = 'block';
-  document.getElementById('user-email-display').textContent = '👤 ' + USER_EMAIL;
-  loadAll();
-}
+    const LoginModal = ({ isOpen, onClose, onLogin }) => {
+        const [email, setEmail] = useState('');
+        const [password, setPassword] = useState('');
+        const [showPassword, setShowPassword] = useState(false);
+        const [status, setStatus] = useState('idle');
+        const [recaptchaOk, setRecaptchaOk] = useState(!recaptchaEnabled);
+        const widgetId = useRef(null);
 
-function doLogout() {
-  sessionStorage.removeItem('an_token');
-  sessionStorage.removeItem('an_email');
-  ACCESS_TOKEN = ''; USER_EMAIL = '';
-  document.getElementById('dashboard').style.display    = 'none';
-  document.getElementById('login-screen').style.display = 'flex';
-  document.getElementById('inp-pass').value = '';
-  document.getElementById('login-err').style.display = 'none';
-}
+        useEffect(() => {
+            if (window.lucide) window.lucide.createIcons();
+        }, [status, showPassword]);
 
-// Restaura sessão se ainda estiver válida
-window.addEventListener('DOMContentLoaded', function() {
-  var t = sessionStorage.getItem('an_token');
-  var e = sessionStorage.getItem('an_email');
-  if (t && e) {
-    ACCESS_TOKEN = t; USER_EMAIL = e;
-    openDashboard();
-  }
-  // Enter no campo de senha faz login
-  document.getElementById('inp-pass').addEventListener('keydown', function(ev) {
-    if (ev.key === 'Enter') login();
-  });
-  document.getElementById('inp-email').addEventListener('keydown', function(ev) {
-    if (ev.key === 'Enter') document.getElementById('inp-pass').focus();
-  });
-});
+        useEffect(() => {
+            if (!recaptchaEnabled) return;
+            if (isOpen) {
+                setRecaptchaOk(false);
+                const tryRender = () => {
+                    const container = document.getElementById('login-recaptcha');
+                    if (window.grecaptcha && container) {
+                        try {
+                            if (widgetId.current !== null) {
+                                window.grecaptcha.reset(widgetId.current);
+                            } else {
+                                widgetId.current = window.grecaptcha.render(container, {
+                                    sitekey: RECAPTCHA_SITE_KEY,
+                                    callback: () => setRecaptchaOk(true),
+                                    'expired-callback': () => setRecaptchaOk(false),
+                                });
+                            }
+                        } catch(e) { /* já renderizado */ }
+                    } else {
+                        setTimeout(tryRender, 300);
+                    }
+                };
+                setTimeout(tryRender, 150);
+            } else {
+                setRecaptchaOk(!recaptchaEnabled);
+            }
+        }, [isOpen]);
 
-// ── API ───────────────────────────────────────────────────
-function api(path) {
-  return fetch(SUPA_URL + '/rest/v1/' + path, {
-    headers: {
-      'apikey':        ANON_KEY,
-      'Authorization': 'Bearer ' + ACCESS_TOKEN,
-      'Content-Type':  'application/json'
-    }
-  }).then(function(r) {
-    if (r.status === 401) { doLogout(); throw new Error('Sessão expirada. Faça login novamente.'); }
-    if (!r.ok) return r.text().then(function(t) { throw new Error('HTTP ' + r.status + ': ' + t); });
-    return r.json();
-  });
-}
-function gerr(m) { document.getElementById('gerr').innerHTML = '<div class="global-err">⚠️ ' + m + '</div>'; }
+        if (!isOpen) return null;
 
-// ── ABAS ──────────────────────────────────────────────────
-function showTab(name, el) {
-  document.querySelectorAll('.tab-section').forEach(function(s) { s.classList.remove('active'); });
-  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
-  document.getElementById('tab-' + name).classList.add('active');
-  el.classList.add('active');
-  if (name === 'heatmap') setTimeout(renderHeatmap, 100);
-}
+        const handleAuth = async (e) => {
+            e.preventDefault();
+            if (status === 'loading' || status === 'success') return;
+            if (!recaptchaOk) {
+                alert('Por favor, confirme que você não é um robô.');
+                return;
+            }
 
-// ── LOAD ALL ──────────────────────────────────────────────
-function loadAll() {
-  document.getElementById('gerr').innerHTML = '';
-  loadKpis();
-  loadTimeChart();
-  loadClickTable();
-  loadHeatData();
-  loadScrollDepth();
-  loadVideoChart();
-  loadUTMTable();
-}
+            setStatus('loading');
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-// ── KPIs ──────────────────────────────────────────────────
-function loadKpis() {
-  api('sessions?select=session_id,time_on_page,utm_source').then(function(rows) {
-    var total = rows.length;
-    document.getElementById('k-sess').textContent = total;
-    var withTime = rows.filter(function(r) { return r.time_on_page > 0; });
-    var avg = withTime.length ? Math.round(withTime.reduce(function(a,r){return a+r.time_on_page;},0)/withTime.length) : 0;
-    document.getElementById('k-time').textContent = avg + 's';
-    var withUTM = rows.filter(function(r){return r.utm_source;}).length;
-    document.getElementById('k-utm').textContent = withUTM + ' (' + (total?Math.round(withUTM/total*100):0) + '%)';
+            if (error) {
+                setStatus('error');
+                if (recaptchaEnabled && widgetId.current !== null) window.grecaptcha.reset(widgetId.current);
+                setRecaptchaOk(false);
+                setTimeout(() => setStatus('idle'), 500);
+            } else {
+                setStatus('success');
+                setTimeout(() => {
+                    onLogin(data.session);
+                    onClose();
+                    setStatus('idle');
+                    setEmail('');
+                    setPassword('');
+                    setShowPassword(false);
+                }, 1500);
+            }
+        };
 
-    api('video_events?select=session_id&second=gte.5').then(function(ve){
-      document.getElementById('k-vpct').textContent = total ? Math.round(new Set(ve.map(function(r){return r.session_id;})).size/total*100)+'%' : '0%';
-    });
-    api('click_events?select=session_id,element_text,element_tag').then(function(ce){
-      var cta = ce.filter(isCTA);
-      document.getElementById('k-cta').textContent = cta.length;
-      document.getElementById('k-conv').textContent = total ? Math.round(new Set(cta.map(function(r){return r.session_id;})).size/total*100)+'%' : '0%';
-    });
-  }).catch(function(e){gerr('KPIs: '+e.message);});
-}
+        const inputClass = `w-full p-4 rounded-xl bg-plumare-softwhite dark:bg-plumare-dark3 border text-sm outline-none focus:ring-2 focus:ring-plumare-blue transition-all ${
+            status === 'error'
+                ? 'border-red-500 text-red-500 animate-shake focus:ring-red-500'
+                : 'border-gray-200 dark:border-plumare-dark3'
+        }`;
 
-function isCTA(r) {
-  var t = (r.element_text||'').toUpperCase();
-  return t.includes('WHATSAPP')||t.includes('RESTAURAR')||t.includes('FOTO')||t.includes('RAMON')||r.element_tag==='A';
-}
+        return (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-plumare-black/80 backdrop-blur-sm p-4">
+                <div className="glass-panel p-8 rounded-3xl w-full max-w-sm relative animate-fade-in-up">
+                    <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-red-500"><i data-lucide="x"></i></button>
 
-// ── TEMPO NA PÁGINA ───────────────────────────────────────
-function loadTimeChart() {
-  setLoad('tl',true); document.getElementById('tchart').style.display='none';
-  api('sessions?select=time_on_page&time_on_page=gt.0').then(function(rows){
-    var b={'<30s':0,'30-60s':0,'1-2min':0,'2-5min':0,'5min+':0};
-    rows.forEach(function(r){var t=r.time_on_page;if(t<30)b['<30s']++;else if(t<60)b['30-60s']++;else if(t<120)b['1-2min']++;else if(t<300)b['2-5min']++;else b['5min+']++;});
-    setLoad('tl',false); var c=document.getElementById('tchart'); c.style.display='block';
-    if(tChart)tChart.destroy();
-    tChart=new Chart(c,{type:'bar',data:{labels:Object.keys(b),datasets:[{data:Object.values(b),backgroundColor:['#ef4444','#f97316','#f0a500','#84cc16','#25D366'],borderRadius:6}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#6b7280'},grid:{display:false}},y:{ticks:{color:'#6b7280'},grid:{color:'#252830'}}}}});
-  }).catch(function(e){document.getElementById('tl').innerHTML='<p class="err">'+e.message+'</p>';});
-}
+                    <h2 className="text-xl font-bold mb-6 text-plumare-blue text-center">Acesso Restrito</h2>
 
-// ── CLIQUES ───────────────────────────────────────────────
-function loadClickTable() {
-  setLoad('cl',true); document.getElementById('ctable').style.display='none';
-  api('click_events?select=element_tag,element_text&limit=20000').then(function(rows){
-    var counts={};
-    rows.forEach(function(r){var txt=(r.element_text||'').replace(/\s+/g,' ').trim().slice(0,50)||'(sem texto)';var key=(r.element_tag||'?')+'||'+txt;counts[key]=(counts[key]||0)+1;});
-    var sorted=Object.entries(counts).sort(function(a,b){return b[1]-a[1];}).slice(0,8);
-    setLoad('cl',false); document.getElementById('ctable').style.display='block';
-    document.getElementById('ctbody').innerHTML=sorted.map(function(e){var p=e[0].split('||');var tag=p[0];var txt=p.slice(1).join('||');return '<tr><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(txt)+'">'+esc(txt)+'</td><td><code style="color:var(--muted);font-size:11px">'+esc(tag)+'</code></td><td><span class="pill '+(isCTA({element_text:txt,element_tag:tag})?'g':'y')+'">'+e[1]+'</span></td></tr>';}).join('');
-  }).catch(function(e){document.getElementById('cl').innerHTML='<p class="err">'+e.message+'</p>';});
-}
+                    <form onSubmit={handleAuth} className="space-y-4">
+                        <input
+                            type="email"
+                            placeholder="Email"
+                            className={inputClass}
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
+                            disabled={status === 'loading' || status === 'success'}
+                        />
+                        <div className="relative">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                placeholder="Senha"
+                                className={`${inputClass} pr-12`}
+                                value={password}
+                                onChange={e => setPassword(e.target.value)}
+                                disabled={status === 'loading' || status === 'success'}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-plumare-blue transition-colors focus:outline-none"
+                                disabled={status === 'loading' || status === 'success'}
+                            >
+                                <i data-lucide={showPassword ? "eye-off" : "eye"} className="w-5 h-5"></i>
+                            </button>
+                        </div>
 
-// ── HEATMAP ───────────────────────────────────────────────
-function loadHeatData() {
-  api('click_events?select=x_pct,y_pct&limit=10000').then(function(rows){
-    heatData=rows;
-    document.getElementById('hl').style.display='none';
-    document.getElementById('heat-site-wrap').style.display='block';
-    if(document.getElementById('tab-heatmap').classList.contains('active')) renderHeatmap();
-  }).catch(function(e){document.getElementById('hl').innerHTML='<p class="err">'+e.message+'</p>';});
-}
+                        {recaptchaEnabled && (
+                            <div className="flex justify-center">
+                                <div id="login-recaptcha"></div>
+                            </div>
+                        )}
 
-function renderHeatmap() {
-  var wrap=document.getElementById('heat-site-wrap');
-  var iframe=document.getElementById('site-iframe');
-  var overlay=document.getElementById('heat-overlay');
-  var radius=parseInt(document.getElementById('heat-radius').value);
-  document.getElementById('hl').style.display='none';
-  wrap.style.display='block';
-  var W=wrap.clientWidth||480;
-  var H=Math.round(W*3.2);
-  iframe.style.width=W+'px'; iframe.style.height=H+'px';
-  function draw(){
-    overlay.width=W; overlay.height=H;
-    overlay.style.width=W+'px'; overlay.style.height=H+'px';
-    var ctx=overlay.getContext('2d'); ctx.clearRect(0,0,W,H);
-    if(!heatData.length){ctx.fillStyle='rgba(107,114,128,0.5)';ctx.font='14px Sora,sans-serif';ctx.textAlign='center';ctx.fillText('Sem cliques ainda',W/2,H/2);return;}
-    heatData.forEach(function(r){var x=(r.x_pct/100)*W;var y=(r.y_pct/100)*H;var g=ctx.createRadialGradient(x,y,0,x,y,radius);g.addColorStop(0,'rgba(240,80,0,0.55)');g.addColorStop(0.4,'rgba(240,165,0,0.25)');g.addColorStop(1,'rgba(240,165,0,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,radius,0,Math.PI*2);ctx.fill();});
-  }
-  iframe.onload=draw;
-  if(iframe.contentDocument&&iframe.contentDocument.readyState==='complete') draw();
-}
+                        <button
+                            type="submit"
+                            disabled={status === 'loading' || status === 'success' || !recaptchaOk}
+                            className={`w-full py-4 rounded-xl font-bold text-sm uppercase tracking-wide shadow-lg transition-all duration-300 flex items-center justify-center gap-2
+                                ${status === 'success'
+                                    ? 'bg-green-500 text-white animate-success-scale shadow-green-500/30'
+                                    : !recaptchaOk
+                                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                    : 'bg-plumare-blue text-white hover:brightness-110'
+                                }`}
+                        >
+                            {status === 'loading' && (
+                                <>
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    <span>Verificando...</span>
+                                </>
+                            )}
 
-// ── DOBRA ─────────────────────────────────────────────────
-function loadScrollDepth() {
-  setLoad('sl',true); document.getElementById('fold-container').style.display='none';
-  Promise.all([api('sessions?select=session_id'),api('scroll_events?select=session_id,scroll_pct')]).then(function(res){
-    var total=res[0].length; var scrolls=res[1];
-    if(!total){document.getElementById('sl').innerHTML='<p class="empty">Sem dados ainda.</p>';return;}
-    var reached={25:0,50:0,75:0,100:0};
-    var bySess={};
-    scrolls.forEach(function(r){if(!bySess[r.session_id])bySess[r.session_id]=new Set();bySess[r.session_id].add(r.scroll_pct);});
-    Object.values(bySess).forEach(function(marks){[25,50,75,100].forEach(function(m){if(marks.has(m))reached[m]++;});});
-    var sections={25:'Vídeo / CTA 1',50:'Como funciona',75:'Carrossel antes/depois',100:'CTA final / rodapé'};
-    var colors={25:'#25D366',50:'#84cc16',75:'#f0a500',100:'#ef4444'};
-    setLoad('sl',false); document.getElementById('fold-container').style.display='block';
-    var barsHtml='';
-    [25,50,75,100].forEach(function(m){var pct=total?Math.round(reached[m]/total*100):0;barsHtml+='<div style="margin-bottom:18px"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="font-weight:700;color:'+colors[m]+'">'+m+'% da página</span><span style="font-family:\'JetBrains Mono\',monospace;font-weight:700">'+pct+'% <span style="color:var(--muted);font-size:11px">('+reached[m]+' sess.)</span></span></div><div style="background:var(--border);border-radius:6px;height:10px;overflow:hidden"><div style="background:'+colors[m]+';width:'+pct+'%;height:100%;border-radius:6px"></div></div></div>';});
-    document.getElementById('fold-bars').innerHTML=barsHtml;
-    var mapEl=document.getElementById('fold-map'); mapEl.innerHTML='';
-    var mh=mapEl.clientHeight||320;
-    [100,75,50,25].forEach(function(m){var pct=total?Math.round(reached[m]/total*100):0;var topPos=(100-m)/100*mh;var bar=document.createElement('div');bar.className='fold-bar';bar.style.top=topPos+'px';bar.style.borderColor=colors[m]+'80';bar.innerHTML='<span class="fold-label" style="color:'+colors[m]+'">'+m+'%</span><span class="fold-pct" style="color:'+colors[m]+'">'+pct+'% chegaram</span>';mapEl.appendChild(bar);});
-    document.getElementById('fold-table-body').innerHTML=[25,50,75,100].map(function(m){var pct=total?Math.round(reached[m]/total*100):0;return '<tr><td><span style="color:'+colors[m]+';font-weight:800">'+m+'% da página</span></td><td><span class="pill" style="background:'+colors[m]+';color:#000">'+reached[m]+'</span></td><td style="font-family:\'JetBrains Mono\',monospace;font-weight:700">'+pct+'%</td><td style="color:var(--muted)">'+sections[m]+'</td></tr>';}).join('');
-  }).catch(function(e){document.getElementById('sl').innerHTML='<p class="err">'+e.message+'</p>';});
-}
+                            {status === 'success' && (
+                                <span className="flex items-center gap-2 animate-pop-in">
+                                    <i data-lucide="check-circle" className="w-5 h-5"></i>
+                                    Acesso Permitido
+                                </span>
+                            )}
 
-// ── VÍDEO ─────────────────────────────────────────────────
-function loadVideoChart() {
-  setLoad('vl',true); document.getElementById('vchart').style.display='none'; document.getElementById('video-milestones').style.display='none';
-  Promise.all([api('sessions?select=session_id'),api('video_events?select=session_id,second&event_type=eq.progress&order=second.asc&limit=50000')]).then(function(res){
-    var rows=res[1]; var maxBySess={};
-    rows.forEach(function(r){if(maxBySess[r.session_id]===undefined||r.second>maxBySess[r.session_id])maxBySess[r.session_id]=r.second;});
-    var total=Object.keys(maxBySess).length;
-    if(!total){document.getElementById('vl').innerHTML='<p class="empty">Sem dados de vídeo.</p>';return;}
-    var maxSec=Math.max.apply(null,Object.values(maxBySess));
-    var step=Math.max(1,Math.floor(maxSec/60));
-    var labels=[],data=[];
-    for(var s=0;s<=maxSec;s+=step){labels.push(s+'s');data.push(Math.round(Object.values(maxBySess).filter(function(m){return m>=s;}).length/total*100));}
-    setLoad('vl',false); var c=document.getElementById('vchart'); c.style.display='block';
-    if(vChart)vChart.destroy();
-    vChart=new Chart(c,{type:'line',data:{labels:labels,datasets:[{label:'% assistindo',data:data,borderColor:'#f0a500',backgroundColor:'rgba(240,165,0,0.07)',borderWidth:2.5,pointRadius:0,fill:true,tension:0.3}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.parsed.y+'% dos espectadores';}}}},scales:{x:{ticks:{color:'#6b7280',maxTicksLimit:14},grid:{color:'#252830'}},y:{min:0,max:100,ticks:{color:'#6b7280',callback:function(v){return v+'%';}},grid:{color:'#252830'}}}}});
-    var mColors={10:'#3b82f6',25:'#25D366',50:'#84cc16',75:'#f0a500',90:'#ef4444'};
-    document.getElementById('milestone-cards').innerHTML=[10,25,50,75,90].map(function(m){var idx=Math.min(Math.floor((m/100)*labels.length),labels.length-1);var val=data[idx]||0;return '<div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center"><div style="font-size:11px;color:'+mColors[m]+';font-weight:800;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px">'+m+'% do vídeo</div><div style="font-size:22px;font-weight:800;font-family:\'JetBrains Mono\',monospace;color:'+mColors[m]+'">'+val+'%</div><div style="font-size:11px;color:var(--muted);margin-top:3px">ainda assistindo</div></div>';}).join('');
-    document.getElementById('video-milestones').style.display='block';
-  }).catch(function(e){document.getElementById('vl').innerHTML='<p class="err">'+e.message+'</p>';});
-}
+                            {(status === 'idle' || status === 'error') && 'Entrar'}
+                        </button>
 
-// ── UTM ───────────────────────────────────────────────────
-function loadUTMTable() {
-  setLoad('utm-load',true); document.getElementById('utm-table-wrap').style.display='none';
-  Promise.all([api('sessions?select=session_id,utm_source,utm_medium,utm_campaign'),api('click_events?select=session_id,element_text,element_tag')]).then(function(res){
-    var sessions=res[0]; var clicks=res[1];
-    var campaigns={};
-    sessions.forEach(function(s){var key=s.utm_campaign||'(orgânico / direto)';if(!campaigns[key])campaigns[key]={source:s.utm_source||'—',medium:s.utm_medium||'—',sessions:new Set(),cta:0};campaigns[key].sessions.add(s.session_id);});
-    var ctaBySess={};
-    clicks.filter(isCTA).forEach(function(c){ctaBySess[c.session_id]=true;});
-    sessions.forEach(function(s){var key=s.utm_campaign||'(orgânico / direto)';if(ctaBySess[s.session_id])campaigns[key].cta++;});
-    var rows=Object.entries(campaigns).sort(function(a,b){return b[1].sessions.size-a[1].sessions.size;});
-    setLoad('utm-load',false); document.getElementById('utm-table-wrap').style.display='block';
-    document.getElementById('utm-tbody').innerHTML=rows.map(function(e){var k=e[0];var d=e[1];var sess=d.sessions.size;var isOrg=k==='(orgânico / direto)';return '<tr><td><strong style="color:'+(isOrg?'var(--muted)':'var(--accent)')+'">'+esc(k)+'</strong></td><td>'+esc(d.source)+'</td><td>'+esc(d.medium)+'</td><td><span class="pill '+(isOrg?'y':'g')+'">'+sess+'</span></td><td>'+d.cta+'</td><td style="font-family:\'JetBrains Mono\',monospace;font-weight:700">'+(sess?Math.round(d.cta/sess*100)+'%':'—')+'</td></tr>';}).join('');
-  }).catch(function(e){document.getElementById('utm-load').innerHTML='<p class="err">'+e.message+'</p>';});
-}
+                        {status === 'error' && (
+                            <p className="text-red-500 text-xs text-center font-bold animate-pulse">
+                                Credenciais inválidas. Tente novamente.
+                            </p>
+                        )}
+                    </form>
+                </div>
+            </div>
+        );
+    };
 
-function copyUTM() { navigator.clipboard.writeText('?utm_source=facebook&utm_medium=cpc&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}').then(showCopyOk); }
-function copyFullURL() { navigator.clipboard.writeText('https://seusite.com/?utm_source=facebook&utm_medium=cpc&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}').then(showCopyOk); }
-function showCopyOk() { var el=document.getElementById('copy-ok'); el.style.display='block'; setTimeout(function(){el.style.display='none';},2500); }
-function setLoad(id,show) { var el=document.getElementById(id); if(el)el.style.display=show?'block':'none'; }
-function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    const EditModal = ({ isOpen, product, existingCategories, onClose, onSave, onDelete }) => {
+        if (!isOpen || !product) return null;
+        const [formData, setFormData] = useState({ ...product });
+        const [status, setStatus] = useState('idle'); 
+        const isNew = !formData.id;
+
+        useEffect(() => {
+            if (isOpen) setStatus('idle');
+        }, [isOpen]);
+
+        const handleChange = (field, value) => setFormData(prev => ({ ...prev, [field]: value }));
+        const handleArrayChange = (field, value) => handleChange(field, value.split('\n').filter(i => i.trim() !== ''));
+        
+        const updateImage = (index, value) => {
+            const newImages = [...(formData.images || [])];
+            newImages[index] = value;
+            setFormData(prev => ({ ...prev, images: newImages }));
+        };
+
+        const addImageSlot = () => {
+            setFormData(prev => ({ ...prev, images: [...(prev.images || []), ''] }));
+        };
+
+        const removeImageSlot = (index) => {
+            const newImages = formData.images.filter((_, i) => i !== index);
+            setFormData(prev => ({ ...prev, images: newImages }));
+        };
+
+        const handleSaveClick = async () => {
+            if (status !== 'idle') return;
+            setStatus('saving');
+            try {
+                await onSave(formData);
+                setStatus('success');
+                setTimeout(() => {
+                    onClose();
+                }, 1500);
+            } catch (e) {
+                console.error(e);
+                alert("Erro ao salvar: " + (e.message || "Erro desconhecido"));
+                setStatus('idle');
+            }
+        };
+
+        const handleDeleteClick = async () => {
+            if (status !== 'idle') return;
+            if (window.confirm('ATENÇÃO: Deseja realmente excluir este produto? Essa ação não pode ser desfeita.')) {
+                setStatus('deleting');
+                try {
+                    await onDelete(formData.id);
+                    setStatus('deleted');
+                    setTimeout(() => {
+                        onClose();
+                    }, 1500);
+                } catch (error) {
+                    console.error("Erro no delete:", error);
+                    alert("ERRO AO EXCLUIR: " + (error.message || error.error_description || "Erro desconhecido"));
+                    setStatus('idle');
+                }
+            }
+        };
+
+        return (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-plumare-black/80 backdrop-blur-sm p-4">
+                <div className="glass-panel p-6 rounded-3xl w-full max-w-lg relative animate-fade-in-up my-10 max-h-[90vh] overflow-y-auto overflow-x-hidden">
+                    
+                    {status === 'idle' && (
+                        <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-red-500 z-50"><i data-lucide="x"></i></button>
+                    )}
+
+                    {status !== 'idle' && (
+                        <div className="absolute inset-0 bg-white/90 dark:bg-plumare-dark2/95 z-40 flex flex-col items-center justify-center animate-fade-in">
+                            {status === 'saving' && (
+                                <div className="text-center space-y-4">
+                                    <div className="w-16 h-16 border-4 border-plumare-blue border-t-transparent rounded-full animate-spin mx-auto"></div>
+                                    <p className="font-bold text-plumare-blue animate-pulse">
+                                        {isNew ? 'Criando Produto...' : 'Salvando Alterações...'}
+                                    </p>
+                                </div>
+                            )}
+                            {status === 'deleting' && (
+                                <div className="text-center space-y-4">
+                                    <div className="w-16 h-16 border-4 border-red-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                                    <p className="font-bold text-red-500 animate-pulse">
+                                        Apagando Produto...
+                                    </p>
+                                </div>
+                            )}
+
+                            {status === 'success' && (
+                                <div className="text-center space-y-4">
+                                    <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto animate-bounce-short shadow-lg shadow-green-500/30">
+                                        <i data-lucide="check" className="w-10 h-10 text-white stroke-[3]"></i>
+                                    </div>
+                                    <p className="font-bold text-green-600 text-lg">
+                                        {isNew ? 'Produto Criado!' : 'Salvo com Sucesso!'}
+                                    </p>
+                                </div>
+                            )}
+                            
+                            {status === 'deleted' && (
+                                <div className="text-center space-y-4">
+                                    <div className="w-20 h-20 bg-gray-500 rounded-full flex items-center justify-center mx-auto animate-bounce-short shadow-lg shadow-gray-500/30">
+                                        <i data-lucide="trash-2" className="w-10 h-10 text-white stroke-[3]"></i>
+                                    </div>
+                                    <p className="font-bold text-gray-600 dark:text-gray-300 text-lg">
+                                        Produto Excluído!
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    <h2 className="text-xl font-bold mb-4 text-plumare-blue">{isNew ? 'Novo Produto' : 'Editar Produto'}</h2>
+                    
+                    <div className={`space-y-4 transition-opacity ${status !== 'idle' ? 'opacity-50 pointer-events-none' : ''}`}>
+                        <div>
+                            <label className="text-xs font-bold text-gray-500 uppercase">Título</label>
+                            <input disabled={status !== 'idle'} className="w-full p-3 rounded-xl bg-plumare-softwhite dark:bg-plumare-dark3 border border-transparent focus:border-plumare-blue outline-none" value={formData.title} onChange={e => handleChange('title', e.target.value)} placeholder="Ex: Jogo de Lençol Queen" />
+                        </div>
+                        <div>
+                            <label className="text-xs font-bold text-gray-500 uppercase">Categoria</label>
+                            <input disabled={status !== 'idle'} list="category-list" className="w-full p-3 rounded-xl bg-plumare-softwhite dark:bg-plumare-dark3 border border-transparent focus:border-plumare-blue outline-none" value={formData.category} onChange={e => handleChange('category', e.target.value)} placeholder="Digite ou selecione..." />
+                            <datalist id="category-list">
+                                {existingCategories.map(cat => <option key={cat} value={cat} />)}
+                            </datalist>
+                            <p className="text-[10px] text-gray-400 mt-1 ml-1">* Digite uma nova categoria para criar uma nova aba.</p>
+                        </div>
+
+                        {/* NOVO CAMPO DE TEXTO DO BOTÃO */}
+                        <div>
+                            <label className="text-xs font-bold text-gray-500 uppercase">Texto do Botão (WhatsApp)</label>
+                            <input disabled={status !== 'idle'} className="w-full p-3 rounded-xl bg-plumare-softwhite dark:bg-plumare-dark3 border border-transparent focus:border-plumare-blue outline-none" value={formData.button_text || ''} onChange={e => handleChange('button_text', e.target.value)} placeholder="Padrão: Consultar Disponibilidade" />
+                            <p className="text-[10px] text-gray-400 mt-1 ml-1">* Ex: Consultar Cores, Comprar Agora, Encomendar...</p>
+                        </div>
+
+                        <div>
+                            <label className="text-xs font-bold text-gray-500 uppercase">Especificações (Linha a linha)</label>
+                            <textarea disabled={status !== 'idle'} className="w-full p-3 rounded-xl bg-plumare-softwhite dark:bg-plumare-dark3 border border-transparent focus:border-plumare-blue outline-none h-24" defaultValue={formData.specs ? formData.specs.join('\n') : ''} onChange={e => handleArrayChange('specs', e.target.value)} placeholder="100% Algodão&#10;Fios 30/1 Penteado" />
+                        </div>
+                        
+                        <div>
+                            <div className="flex justify-between items-center mb-2">
+                                <label className="text-xs font-bold text-gray-500 uppercase">Imagens (Links)</label>
+                                <button disabled={status !== 'idle'} onClick={addImageSlot} className="text-xs text-plumare-blue font-bold hover:underline">+ Adicionar Foto</button>
+                            </div>
+                            <div className="space-y-3">
+                                {formData.images && formData.images.map((img, idx) => {
+                                    const baseUrl = img.split('#crop:')[0];
+                                    const cropVal = img.split('#crop:')[1] || 'center';
+                                    const setUrl = (newBase, newCrop) => {
+                                        const newUrl = newCrop === 'center' ? newBase : `${newBase}#crop:${newCrop}`;
+                                        updateImage(idx, newUrl);
+                                    };
+                                    return (
+                                    <div key={idx} className="space-y-1">
+                                        <div className="flex gap-2 items-center">
+                                            <div className="w-10 h-10 rounded-lg bg-gray-200 shrink-0 overflow-hidden flex items-center justify-center">
+                                                {img ? <img src={getImageUrl(img)} className="w-full h-full object-cover" style={{objectPosition: getImagePosition(img)}} /> : <span className="text-[8px]">{idx+1}</span>}
+                                            </div>
+                                            <div className="flex-1 relative">
+                                                <span className="absolute -top-2 left-2 px-1 bg-white dark:bg-plumare-dark2 text-[8px] font-bold text-gray-400">Foto {idx + 1}</span>
+                                                <input
+                                                    disabled={status !== 'idle'}
+                                                    className="w-full p-2.5 rounded-xl bg-plumare-softwhite dark:bg-plumare-dark3 border border-transparent focus:border-plumare-blue outline-none text-xs"
+                                                    value={baseUrl}
+                                                    onChange={e => setUrl(e.target.value, cropVal)}
+                                                    placeholder="Link do Drive ou Imagem direta..."
+                                                />
+                                            </div>
+                                            <button disabled={status !== 'idle'} onClick={() => removeImageSlot(idx)} className="w-8 h-8 rounded-full hover:bg-red-100 text-red-400 flex items-center justify-center transition-colors">
+                                                <i data-lucide="trash-2" className="w-4 h-4"></i>
+                                            </button>
+                                        </div>
+                                        {baseUrl && (
+                                            <div className="flex items-center gap-2 pl-12">
+                                                <span className="text-[10px] text-gray-400 font-bold uppercase">Enquadrar:</span>
+                                                <select
+                                                    disabled={status !== 'idle'}
+                                                    value={cropVal}
+                                                    onChange={e => setUrl(baseUrl, e.target.value)}
+                                                    className="text-xs rounded-lg bg-plumare-softwhite dark:bg-plumare-dark3 border border-transparent focus:border-plumare-blue outline-none px-2 py-1"
+                                                >
+                                                    <option value="center">Centro</option>
+                                                    <option value="top">Cima</option>
+                                                    <option value="bottom">Baixo</option>
+                                                    <option value="left">Esquerda</option>
+                                                    <option value="right">Direita</option>
+                                                </select>
+                                            </div>
+                                        )}
+                                    </div>
+                                    );
+                                })}
+                                {(!formData.images || formData.images.length === 0) && (
+                                    <p className="text-xs text-center text-gray-400 py-2">Nenhuma imagem cadastrada.</p>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="flex gap-2 mt-4">
+                            {!isNew && (
+                                <button 
+                                    disabled={status !== 'idle'}
+                                    onClick={handleDeleteClick} 
+                                    className="flex-1 py-3 bg-red-50 text-red-500 border border-red-100 rounded-xl font-bold hover:bg-red-100 transition-colors disabled:opacity-50"
+                                >
+                                    Excluir
+                                </button>
+                            )}
+                            <button 
+                                disabled={status !== 'idle'}
+                                onClick={handleSaveClick} 
+                                className="flex-[2] py-3 bg-plumare-teal text-plumare-black rounded-xl font-bold hover:brightness-110 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            >
+                                {isNew ? 'Criar Produto' : 'Salvar Alterações'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    const ProductCard = ({ product, isAdmin, onEdit }) => {
+        const [currentImgIndex, setCurrentImgIndex] = useState(0);
+
+        const nextImage = (e) => {
+            e.stopPropagation();
+            if(product.images) setCurrentImgIndex((prev) => (prev + 1) % product.images.length);
+        };
+
+        const prevImage = (e) => {
+            e.stopPropagation();
+            if(product.images) setCurrentImgIndex((prev) => (prev - 1 + product.images.length) % product.images.length);
+        };
+
+        const currentImageUrl = product.images && product.images.length > 0 ? getImageUrl(product.images[currentImgIndex]) : '';
+
+        // Texto dinâmico do botão
+        const buttonLabel = product.button_text && product.button_text.trim() !== '' ? product.button_text : 'Consultar Disponibilidade';
+
+        return (
+            <div className="glass-panel rounded-3xl p-0 flex flex-col mb-6 overflow-hidden relative group border-0 shadow-lg shadow-gray-200/50 dark:shadow-none">
+                
+                {isAdmin && (
+                    <button onClick={() => onEdit(product)} className="absolute top-4 left-4 z-30 bg-plumare-blue text-white p-2 rounded-xl shadow-lg hover:scale-110 transition-transform">
+                        <i data-lucide="pencil" className="w-4 h-4"></i>
+                    </button>
+                )}
+
+                <div className="relative w-full aspect-square bg-gray-100 dark:bg-plumare-dark2">
+                    <img
+                        src={currentImageUrl}
+                        alt={product.title}
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: getImagePosition(product.images?.[currentImgIndex]) }}
+                        loading="lazy"
+                    />
+                    
+                    {product.images && product.images.length > 1 && (
+                        <>
+                            <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/30 backdrop-blur-md flex items-center justify-center hover:bg-white text-plumare-black z-10 transition-all">
+                                <i data-lucide="chevron-left" className="w-5 h-5"></i>
+                            </button>
+                            <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/30 backdrop-blur-md flex items-center justify-center hover:bg-white text-plumare-black z-10 transition-all">
+                                <i data-lucide="chevron-right" className="w-5 h-5"></i>
+                            </button>
+                            <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 z-10">
+                                {product.images.map((_, idx) => (
+                                    <div key={idx} className={`w-1.5 h-1.5 rounded-full shadow-sm transition-all ${idx === currentImgIndex ? 'bg-white scale-125' : 'bg-white/40'}`}></div>
+                                ))}
+                            </div>
+                        </>
+                    )}
+                    
+                    <div className="absolute top-4 right-4 bg-plumare-blue/90 backdrop-blur-md px-3 py-1 rounded-full z-10 shadow-lg">
+                        <span className="text-[10px] font-bold text-white uppercase tracking-wider">{product.category}</span>
+                    </div>
+                </div>
+
+                <div className="p-6 space-y-5">
+                    <div className="flex justify-between items-start gap-4">
+                        <h3 className="text-xl font-bold text-plumare-dark1 dark:text-white leading-tight">{product.title}</h3>
+                        <a href={`https://api.whatsapp.com/send?phone=5579999999999&text=Olá,%20tenho%20interesse%20no%20${product.title}`} target="_blank"
+                            className="w-10 h-10 shrink-0 rounded-full bg-plumare-teal/20 text-plumare-teal dark:text-plumare-teal flex items-center justify-center hover:bg-plumare-teal hover:text-plumare-black transition-all">
+                            <i data-lucide="message-circle" className="w-5 h-5"></i>
+                        </a>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-2">
+                        {product.specs && product.specs.map((spec, index) => (
+                            <span key={index} className="text-[10px] font-bold uppercase tracking-wide bg-plumare-softwhite dark:bg-plumare-dark3 px-3 py-1.5 rounded-lg text-gray-500 dark:text-gray-400">
+                                {spec}
+                            </span>
+                        ))}
+                    </div>
+
+                    <a href={`https://api.whatsapp.com/send?phone=5579999999999&text=Olá,%20gostaria%20de%20saber%20mais%20sobre%20o%20${product.title}`}
+                        target="_blank"
+                        className="block w-full py-3.5 rounded-xl bg-plumare-dark1 dark:bg-white text-white dark:text-plumare-black font-bold text-sm uppercase tracking-wider text-center hover:shadow-lg hover:-translate-y-1 transition-all">
+                        {buttonLabel}
+                    </a>
+                </div>
+            </div>
+        );
+    };
+
+    const App = () => {
+        const [view, setView] = useState('home');
+        const [products, setProducts] = useState([]);
+        const [selectedCategory, setSelectedCategory] = useState("Todos");
+        const [session, setSession] = useState(null);
+        const [isLoginOpen, setIsLoginOpen] = useState(false);
+        const [editingProduct, setEditingProduct] = useState(null);
+        const [loaded, setLoaded] = useState(false);
+
+        useEffect(() => {
+            fetchProducts();
+            supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
+            const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+                setSession(session);
+                if (session) setIsLoginOpen(false);
+            });
+            setLoaded(true);
+            setTimeout(() => { if(window.lucide) window.lucide.createIcons(); }, 500);
+            return () => subscription.unsubscribe();
+        }, []);
+
+        useEffect(() => {
+            setTimeout(() => { if(window.lucide) window.lucide.createIcons(); }, 100);
+        });
+
+        const fetchProducts = async () => {
+            let { data, error } = await supabase.from('produtos').select('*').order('id', { ascending: true });
+            if (!error && data) setProducts(data);
+        };
+
+        const handleSaveProduct = async (updatedData) => {
+            const cleanImages = (updatedData.images || []).filter(i => i && i.trim() !== '');
+            const cleanSpecs = (updatedData.specs || []).filter(i => i && i.trim() !== '');
+
+            const payload = { 
+                title: updatedData.title, 
+                category: updatedData.category, 
+                specs: cleanSpecs, 
+                images: cleanImages,
+                button_text: updatedData.button_text // Adicionado campo para salvar texto do botão
+            };
+
+            let error;
+            if (updatedData.id) {
+                const res = await supabase.from('produtos').update(payload).eq('id', updatedData.id);
+                error = res.error;
+            } else {
+                const res = await supabase.from('produtos').insert([payload]);
+                error = res.error;
+            }
+
+            if (error) {
+                throw error;
+            } else {
+                fetchProducts();
+            }
+        };
+
+        const handleDeleteProduct = async (id) => {
+            const { error } = await supabase.from('produtos').delete().eq('id', id);
+            
+            if (error) {
+                throw error;
+            }
+            setProducts(current => current.filter(p => p.id !== id));
+            fetchProducts();
+        };
+
+        const handleCreateProduct = () => {
+            setEditingProduct({
+                title: '',
+                category: '',
+                specs: [],
+                images: [''],
+                button_text: '' // Inicializa vazio
+            });
+        };
+
+        const handleLogout = async () => {
+            await supabase.auth.signOut();
+            setSession(null);
+        };
+
+        const categories = ["Todos", ...new Set(products.map(p => p.category).filter(Boolean))];
+        const filteredProducts = selectedCategory === "Todos" ? products : products.filter(p => p.category === selectedCategory);
+
+        const renderButtons = () => {
+            const buttons = [
+                { 
+                    id: 0, title: "Catálogo", subtitle: "Nossos Produtos", icon: "store", 
+                    action: (e) => { e.preventDefault(); window.showCatalog(); },
+                    textColor: "text-plumare-blue", bgColor: "bg-plumare-blue/10"
+                },
+                { id: 1, title: "Atacado", subtitle: "Falar com Vendedor", icon: "message-circle", link: "https://api.whatsapp.com/message/2RURQPNHQBRPI1", textColor: "text-whatsapp", bgColor: "bg-whatsapp/10" },
+                { id: 2, title: "Grupo VIP", subtitle: "Ofertas Exclusivas", icon: "users", link: "https://chat.whatsapp.com/I7re1TmYKaRGUVm2SUMSku", textColor: "text-plumare-blue", bgColor: "bg-plumare-blue/10" },
+                { id: 3, title: "Varejo", subtitle: "Comprar no WhatsApp", icon: "shopping-bag", link: "https://api.whatsapp.com/send?phone=5579999999999", textColor: "text-plumare-teal", bgColor: "bg-plumare-teal/10" },
+                { id: 4, title: "Quem Somos", subtitle: "Nossa história", icon: "heart", link: "#historia", textColor: "text-pink-500", bgColor: "bg-pink-500/10" }
+            ];
+
+            return (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
+                    {buttons.map((btn, index) => (
+                        <a key={btn.id} href={btn.link || '#'} onClick={btn.action} target={btn.link && btn.link.startsWith('http') ? '_blank' : '_self'}
+                            className={`glass-panel p-5 rounded-2xl flex items-center gap-5 group transform transition-all duration-700 ease-out hover:scale-[1.02] cursor-pointer ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'} ${btn.id === 0 ? 'border-l-4 border-plumare-blue shadow-lg shadow-plumare-blue/10' : ''}`}
+                            style={{ transitionDelay: `${index * 100}ms` }}>
+                            <div className={`w-14 h-14 rounded-2xl ${btn.bgColor} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                                <i data-lucide={btn.icon} className={`w-7 h-7 ${btn.textColor}`}></i>
+                            </div>
+                            <div className="flex-1">
+                                <h3 className="font-bold text-lg text-plumare-dark1 dark:text-white leading-tight">{btn.title}</h3>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-light">{btn.subtitle}</p>
+                            </div>
+                            <div className="w-8 h-8 rounded-full bg-gray-50 dark:bg-plumare-dark3 flex items-center justify-center text-gray-400 group-hover:text-plumare-blue transition-colors">
+                                <i data-lucide="chevron-right" className="w-4 h-4"></i>
+                            </div>
+                        </a>
+                    ))}
+                </div>
+            );
+        };
+
+        const renderCatalog = () => (
+            <section className="min-h-screen pb-20">
+                <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} onLogin={setSession} />
+                <EditModal 
+                    isOpen={!!editingProduct} 
+                    product={editingProduct} 
+                    existingCategories={categories.filter(c => c !== "Todos")} 
+                    onClose={() => setEditingProduct(null)} 
+                    onSave={handleSaveProduct} 
+                    onDelete={handleDeleteProduct}
+                />
+
+                <div className="sticky top-0 z-50 glass-panel border-b border-gray-100 dark:border-plumare-dark3">
+                    <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+                        <button onClick={() => window.goHome()} className="w-10 h-10 rounded-full bg-plumare-softwhite dark:bg-plumare-dark3 text-plumare-dark1 dark:text-white flex items-center justify-center hover:bg-gray-200 transition-colors">
+                            <i data-lucide="arrow-left" className="w-5 h-5"></i>
+                        </button>
+                        <span className="font-bold text-lg text-plumare-blue tracking-tight">CATÁLOGO</span>
+                        <div className="flex items-center gap-2">
+                            {session && (
+                                <button onClick={handleCreateProduct} className="w-10 h-10 rounded-full bg-plumare-blue text-white flex items-center justify-center hover:scale-110 shadow-lg transition-transform">
+                                    <i data-lucide="plus" className="w-5 h-5"></i>
+                                </button>
+                            )}
+                            {session ? (
+                                <button onClick={handleLogout} className="w-10 h-10 rounded-full bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 hover:shadow-md transition-all">
+                                    <i data-lucide="log-out" className="w-4 h-4"></i>
+                                </button>
+                            ) : (
+                                <button onClick={() => setIsLoginOpen(true)} className="w-10 h-10 rounded-full text-gray-400 hover:text-plumare-blue hover:bg-plumare-blue/5 transition-all">
+                                    <i data-lucide="lock" className="w-4 h-4"></i>
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="w-full overflow-x-auto no-scrollbar pb-4 px-4">
+                        <div className="flex gap-2 min-w-max mx-auto max-w-4xl">
+                            {categories.map(cat => (
+                                <button key={cat} onClick={() => setSelectedCategory(cat)} 
+                                    className={`px-6 py-2 rounded-full text-xs font-bold transition-all duration-300 border uppercase tracking-wider ${selectedCategory === cat ? 'bg-plumare-blue text-white border-plumare-blue shadow-lg shadow-plumare-blue/30' : 'bg-transparent border-gray-300 dark:border-plumare-dark3 text-gray-500 dark:text-gray-400 hover:border-plumare-blue'}`}>
+                                    {cat}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="max-w-md mx-auto px-0 md:px-0 pt-6 space-y-8 animate-fade-in-up">
+                    {filteredProducts.length > 0 ? (
+                        filteredProducts.map(product => (
+                            <ProductCard key={product.id} product={product} isAdmin={!!session} onEdit={setEditingProduct} />
+                        ))
+                    ) : (
+                        <div className="text-center py-20 mx-4 glass-panel rounded-3xl">
+                            <div className="w-20 h-20 bg-gray-100 dark:bg-plumare-dark3 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i data-lucide="package-open" className="w-8 h-8 text-gray-400"></i>
+                            </div>
+                            <h3 className="text-lg font-bold text-gray-500">Sem produtos aqui.</h3>
+                        </div>
+                    )}
+                </div>
+            </section>
+        );
+
+        return (
+            <React.Fragment>
+                {ReactDOM.createPortal(renderButtons(), document.getElementById('react-buttons-root'))}
+                {ReactDOM.createPortal(renderCatalog(), document.getElementById('react-catalog-root'))}
+            </React.Fragment>
+        );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root-controller'));
+    root.render(<App />);
 </script>
+
+<div id="root-controller"></div>
+
+    <!-- Scripts de Efeito -->
+    <script>
+        // Inicializa ícones
+        lucide.createIcons();
+
+        // Lógica de Tema
+        function toggleTheme() {
+            const html = document.documentElement;
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+        }
+
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        }
+
+        // Navegação
+        window.showCatalog = function() {
+            document.getElementById('main-header').classList.add('-translate-y-full');
+            document.getElementById('spacer-header').classList.add('hidden');
+            document.getElementById('home-view').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('home-view').classList.add('hidden');
+                document.getElementById('catalog-view').classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'instant' });
+            }, 300);
+        }
+
+        window.goHome = function() {
+            document.getElementById('catalog-view').classList.add('hidden');
+            document.getElementById('home-view').classList.remove('hidden');
+            document.getElementById('spacer-header').classList.remove('hidden');
+            
+            setTimeout(() => {
+                document.getElementById('home-view').style.opacity = '1';
+                document.getElementById('main-header').classList.remove('-translate-y-full');
+            }, 50);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Slideshow
+        const images = document.querySelectorAll('.slider-img');
+        let currentImg = 0;
+        function nextImage() {
+            if(images.length < 2) return;
+            images[currentImg].classList.replace('opacity-100', 'opacity-0');
+            currentImg = (currentImg + 1) % images.length;
+            images[currentImg].classList.replace('opacity-0', 'opacity-100');
+        }
+        if(images.length > 1) setInterval(nextImage, 4000);
+
+        // Video Player
+        const video = document.getElementById('plumare-video');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+
+        if(playPauseBtn && video) {
+            playPauseBtn.onclick = () => {
+                if (video.paused) {
+                    video.play();
+                    document.getElementById('play-icon').classList.add('hidden');
+                    document.getElementById('pause-icon').classList.remove('hidden');
+                    document.getElementById('video-controls').style.opacity = '0';
+                } else {
+                    video.pause();
+                    document.getElementById('play-icon').classList.remove('hidden');
+                    document.getElementById('pause-icon').classList.add('hidden');
+                    document.getElementById('video-controls').style.opacity = '1';
+                }
+            };
+            
+            video.onpause = () => document.getElementById('video-controls').style.opacity = '1';
+            video.onended = () => document.getElementById('video-controls').style.opacity = '1';
+        }
+    </script>
 </body>
 </html>
