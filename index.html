@@ -771,6 +771,20 @@
 
     const ProductCard = ({ product, isAdmin, onEdit }) => {
         const [currentImgIndex, setCurrentImgIndex] = useState(0);
+        const [loadedImages, setLoadedImages] = useState({});
+
+        // Pré-carrega todas as fotos do produto assim que o card aparece
+        useEffect(() => {
+            if (product.images) {
+                product.images.forEach((url, idx) => {
+                    if (url) {
+                        const img = new Image();
+                        img.src = getImageUrl(url);
+                        img.onload = () => setLoadedImages(prev => ({ ...prev, [idx]: true }));
+                    }
+                });
+            }
+        }, [product.id]);
 
         const nextImage = (e) => {
             e.stopPropagation();
@@ -796,13 +810,17 @@
                     </button>
                 )}
 
-                <div className="relative w-full aspect-square bg-gray-100 dark:bg-plumare-dark2">
+                <div className="relative w-full bg-gray-100 dark:bg-plumare-dark2 overflow-hidden shrink-0" style={{aspectRatio: '1/1'}}>
+                    {!loadedImages[currentImgIndex] && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-8 h-8 border-2 border-plumare-blue/30 border-t-plumare-blue rounded-full animate-spin"></div>
+                        </div>
+                    )}
                     <img
                         src={currentImageUrl}
                         alt={product.title}
-                        className="w-full h-full object-cover"
+                        className={`w-full h-full object-cover transition-opacity duration-300 ${loadedImages[currentImgIndex] ? 'opacity-100' : 'opacity-0'}`}
                         style={{ objectPosition: getImagePosition(product.images?.[currentImgIndex]) }}
-                        loading="lazy"
                     />
                     
                     {product.images && product.images.length > 1 && (
